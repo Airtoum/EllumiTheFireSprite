@@ -2,10 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character : Entity
+public class StaticCharacter : Character
 {
-    
-    
     // Start is called before the first frame update
     void Start()
     {
@@ -17,5 +15,4 @@ public class Character : Entity
     {
         
     }
-    
 }
