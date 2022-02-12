@@ -394,7 +394,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1601784853}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.23, y: -2.7727, z: 0}
+  m_LocalPosition: {x: -0.23, y: 1.44, z: 0}
   m_LocalScale: {x: 1, y: 1.4546, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -413,6 +413,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 4
+  coyoteTime: 0.08
+  gravitationalAcceleration: {x: 0, y: -1}
   controllable: 1
 --- !u!50 &1601784857
 Rigidbody2D:

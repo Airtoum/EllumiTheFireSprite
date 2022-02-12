@@ -19,6 +19,11 @@ public class DynamicCharacter : Character
     [SerializeField] protected float moveSpeed = 4f;
     
     protected int inputFlags = 0;
+
+    [SerializeField] protected float coyoteTime = 0.08f;
+    protected float coyoteTimeTimer = 0;
+
+    [SerializeField] protected Vector2 gravitationalAcceleration = Vector2.down;
     
     // Start is called before the first frame update
     protected void Start()
@@ -34,10 +39,14 @@ public class DynamicCharacter : Character
     
     protected void DoMovement()
     {
+        Vector2 velocity = rb.velocity;
+        
         float horizontal_movement = 0;
         horizontal_movement += ((inputFlags & INPUT_RIGHT) > 0) ? 1f : 0f;
         horizontal_movement += ((inputFlags & INPUT_LEFT) > 0) ? -1f : 0f;
-        rb.velocity = new Vector2(horizontal_movement * moveSpeed, 0f);
+        velocity += gravitationalAcceleration * Time.fixedDeltaTime;
+        velocity = new Vector2(horizontal_movement * moveSpeed, velocity.y);
+        rb.velocity = velocity;
     }
     
 }
