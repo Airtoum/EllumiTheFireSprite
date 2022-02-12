@@ -25,14 +25,6 @@ public class MainCharacter : DynamicCharacter
             inputFlags |= (Input.GetAxis("Up")>0) ? INPUT_UP : 0;
             inputFlags |= (Input.GetAxis("Jump")>0) ? INPUT_JUMP : 0;
             inputFlags |= (Input.GetAxis("Fire1")>0) ? INPUT_SPECIAL : 0;
-            Debug.Log(
-                Input.GetAxis("Left").ToString() +
-                Input.GetAxis("Right").ToString() +
-                Input.GetAxis("Down").ToString() +
-                Input.GetAxis("Up").ToString() +
-                Input.GetAxis("Jump").ToString() +
-                Input.GetAxis("Fire1"));
-            //Debug.Log(inputFlags);
         }
         base.FixedUpdate();
     }
