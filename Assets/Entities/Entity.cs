@@ -15,4 +15,10 @@ public class Entity : MonoBehaviour
     {
         Destroy(gameObject);
     }
+
+    // override with things you do per-collison
+    protected void EvaluateCollision(Collision2D coll, ContactPoint2D contact)
+    {
+        
+    }
 }

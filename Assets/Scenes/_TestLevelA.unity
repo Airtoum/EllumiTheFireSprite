@@ -328,6 +328,7 @@ GameObject:
   - component: {fileID: 1601784858}
   - component: {fileID: 1601784857}
   - component: {fileID: 1601784856}
+  - component: {fileID: 1601784859}
   m_Layer: 0
   m_Name: Ellumi
   m_TagString: Untagged
@@ -414,7 +415,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 4
   coyoteTime: 0.08
-  gravitationalAcceleration: {x: 0, y: -4}
+  gravitationalAcceleration: {x: 0, y: -30}
+  steepestSlopeDegrees: 45
+  jumpAmount: 5.5
   controllable: 1
 --- !u!50 &1601784857
 Rigidbody2D:
@@ -463,3 +466,15 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &1601784859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1601784853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc4f53b198b2c64dae7b08679b4beef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
