@@ -30,7 +30,9 @@ public class DynamicCharacter : Character
 
     [SerializeField] protected float steepestSlopeDegrees = 45f;
     private bool onGround = false;
-    [SerializeField] protected float jumpAmount = 5; 
+    [SerializeField] protected float jumpAmount = 5;
+
+    protected Vector2 lastPlatformVelocity = Vector2.zero;
     
     // Start is called before the first frame update
     protected void Start()
@@ -53,10 +55,20 @@ public class DynamicCharacter : Character
         float vertical_movement = velocity.y;
         horizontal_movement += ((inputFlags & INPUT_RIGHT) > 0) ? 1f : 0f;
         horizontal_movement += ((inputFlags & INPUT_LEFT) > 0) ? -1f : 0f;
-        vertical_movement += (onGround && (inputFlags & INPUT_JUMP) > 0) ? jumpAmount : 0f;
+        if (onGround) {
+            coyoteTimeTimer = 0;
+        }
+        if ((onGround || coyoteTimeTimer <= coyoteTime) && (inputFlags & INPUT_JUMP) > 0) {
+            vertical_movement += jumpAmount;
+            // make sure they don't have coyote time
+            coyoteTimeTimer = coyoteTime + 1;
+            // add something that uses lastPlatformVelocity for coyote jumps
+        }
         velocity = new Vector2(horizontal_movement * moveSpeed, vertical_movement);
         velocity += gravitationalAcceleration * Time.fixedDeltaTime;
         rb.velocity = velocity;
+
+        coyoteTimeTimer += Time.fixedDeltaTime;
 
         yield return new WaitForFixedUpdate();
         onGround = false;
@@ -67,8 +79,14 @@ public class DynamicCharacter : Character
     protected new void EvaluateCollision(Collision2D coll, ContactPoint2D contact)
     {
         if (Mathf.Abs(Vector2.Angle(contact.normal, Vector2.up)) <= steepestSlopeDegrees) {
-            onGround = true;                        
+            onGround = true;
+            lastPlatformVelocity = rb.velocity + contact.relativeVelocity;
         }
+    }
+
+    public virtual void DoAbilityPrimary(Vector3 position)
+    {
+        // override with cool stuff
     }
 
 }

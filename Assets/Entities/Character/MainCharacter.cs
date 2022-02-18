@@ -5,7 +5,15 @@ using UnityEngine;
 public class MainCharacter : DynamicCharacter
 {
 
-    public bool controllable;
+    public enum controlModes
+    {
+        PlayerControl,
+        NPC,
+        TopHalf,
+        BottomHalf
+    }
+
+    public controlModes controlMode;
     
     // Start is called before the first frame update
     protected new void Start()
@@ -16,7 +24,7 @@ public class MainCharacter : DynamicCharacter
     // Update is called once per frame
     protected new void FixedUpdate()
     {
-        if (controllable) {
+        if (controlMode == controlModes.PlayerControl || controlMode == controlModes.BottomHalf) {
             inputFlags = 0;
             // C# can't convert ints to bools or bools to ints
             inputFlags |= (Input.GetAxis("Left")>0) ? INPUT_LEFT : 0;
@@ -27,5 +35,11 @@ public class MainCharacter : DynamicCharacter
             inputFlags |= (Input.GetAxis("Fire1")>0) ? INPUT_SPECIAL : 0;
         }
         base.FixedUpdate();
+    }
+
+    public new virtual void DoAbilityPrimary(Vector3 position)
+    {
+        // again, override
+        base.DoAbilityPrimary(position);
     }
 }
