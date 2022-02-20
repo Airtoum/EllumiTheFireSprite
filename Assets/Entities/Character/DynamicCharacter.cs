@@ -84,7 +84,12 @@ public class DynamicCharacter : Character
         }
     }
 
-    public virtual void DoAbilityPrimary(Vector3 position)
+    public virtual void DoAbilityPrimaryDown(Vector3 position)
+    {
+        // override with cool stuff
+    }
+    
+    public virtual void DoAbilityPrimaryHold(Vector3 position)
     {
         // override with cool stuff
     }

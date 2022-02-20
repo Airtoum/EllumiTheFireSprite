@@ -37,9 +37,15 @@ public class MainCharacter : DynamicCharacter
         base.FixedUpdate();
     }
 
-    public new virtual void DoAbilityPrimary(Vector3 position)
+    public new virtual void DoAbilityPrimaryDown(Vector3 position)
     {
         // again, override
-        base.DoAbilityPrimary(position);
+        base.DoAbilityPrimaryDown(position);
+    }
+    
+    public new virtual void DoAbilityPrimaryHold(Vector3 position)
+    {
+        // again, override
+        base.DoAbilityPrimaryHold(position);
     }
 }

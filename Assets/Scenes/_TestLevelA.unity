@@ -1273,13 +1273,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d02d1f523dad874fabbe460c88ffea5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  usesFauxVelocity: 0
   moveSpeed: 4
   coyoteTime: 0.08
   gravitationalAcceleration: {x: 0, y: -30}
   steepestSlopeDegrees: 45
   jumpAmount: 5.5
   controlMode: 0
-  flameSpawn: {fileID: 2348945602394527889, guid: 6ec74dc059d19694ea16b64be6e29c94, type: 3}
+  flameSpawn: {fileID: 2348945602394527888, guid: 6ec74dc059d19694ea16b64be6e29c94, type: 3}
+  flameSpawnFrom: {fileID: 1601784855}
+  flameSpeed: 4
+  flameInterval: 0.08
+  flameTimer: 0
 --- !u!50 &1601784857
 Rigidbody2D:
   serializedVersion: 4
@@ -1301,8 +1306,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!61 &1601784858
-BoxCollider2D:
+--- !u!70 &1601784858
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1314,19 +1319,9 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.11313343, y: -0.05382037}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 9.96, y: 17.65}
-    newSize: {x: 1, y: 1}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 8.461708, y: 15.565485}
-  m_EdgeRadius: 0
+  m_Offset: {x: -0.36, y: -1.43}
+  m_Size: {x: 7.7, y: 14.58}
+  m_Direction: 0
 --- !u!114 &1601784859
 MonoBehaviour:
   m_ObjectHideFlags: 0

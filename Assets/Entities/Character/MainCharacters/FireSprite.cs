@@ -1,15 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class FireSprite : MainCharacter
 {
 
-    public GameObject flameSpawn;
-    
-    public override void DoAbilityPrimary(Vector3 position)
+    public Entity flameSpawn;
+    public Transform flameSpawnFrom;
+    public float flameSpeed;
+
+    public float flameInterval = 0.08f;
+    public float flameTimer = 0;
+
+    public override void DoAbilityPrimaryDown(Vector3 position)
     {
-        Instantiate(flameSpawn, position, Quaternion.identity);
+        flameTimer = flameInterval;
+    }
+    
+    public override void DoAbilityPrimaryHold(Vector3 position)
+    {
+        flameTimer += Time.deltaTime;
+        if (flameTimer < flameInterval) return;
+        
+        Vector3 origin = flameSpawnFrom.position;
+        Vector2 direction = position - origin;
+        direction = direction.normalized * flameSpeed;
+        Entity newFlame = Instantiate(flameSpawn, origin, Quaternion.identity);
+        // this is gross
+        newFlame.SetVelocity(direction);
+        flameTimer = 0;
     }
     
 }

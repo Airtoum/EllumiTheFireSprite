@@ -23,7 +23,13 @@ public class MouseSingleton : MonoBehaviour
             // clean this up later
             Vector3 clickPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             clickPosition.z = 0;
-            currentCharacter.DoAbilityPrimary(clickPosition);
+            currentCharacter.DoAbilityPrimaryDown(clickPosition);
+        }
+        // if it's being held down
+        if (Input.GetMouseButton(0)) {
+            Vector3 clickPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            clickPosition.z = 0;
+            currentCharacter.DoAbilityPrimaryHold(clickPosition);
         }
     }
     

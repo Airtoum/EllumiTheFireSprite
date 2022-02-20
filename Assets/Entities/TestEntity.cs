@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TestEntity : MonoBehaviour
+public class TestEntity : Entity
 {
 
     [SerializeField] private float lifeLeft = 0f;
