@@ -18,6 +18,7 @@ public class DynamicCharacter : Character
 
     private Rigidbody2D rb;
     private CollisionData cd;
+    private Collider2D cl;
 
     [SerializeField] protected float moveSpeed = 4f;
     [SerializeField] protected float tightness = 0.1f;
@@ -33,13 +34,20 @@ public class DynamicCharacter : Character
     private bool onGround = false;
     [SerializeField] protected float jumpAmount = 5;
 
+    [SerializeField] protected PhysicsMaterial2D staticMaterial;
+    [SerializeField] protected PhysicsMaterial2D dynamicMaterial;
+
     protected Vector2 lastPlatformVelocity = Vector2.zero;
+
+    // I hate using this as a soluton
+    protected float jumpCooldown = 0.02f;
+    protected float jumpCooldownTimer = 0;
     
-    // Start is called before the first frame update
     protected void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         cd = GetComponent<CollisionData>();
+        cl = GetComponent<Collider2D>();
     }
 
     // Update is called once per frame
@@ -58,24 +66,25 @@ public class DynamicCharacter : Character
         target_horizontal_movement += ((inputFlags & INPUT_RIGHT) > 0) ? 1f : 0f;
         target_horizontal_movement += ((inputFlags & INPUT_LEFT) > 0) ? -1f : 0f;
         target_horizontal_movement *= moveSpeed;
-        print(target_horizontal_movement);
-        if (onGround) {
+        cl.sharedMaterial = (target_horizontal_movement == 0f) ? staticMaterial : dynamicMaterial;
+        if (onGround && jumpCooldownTimer > jumpCooldown) {
             coyoteTimeTimer = 0;
         }
-        if ((onGround || coyoteTimeTimer <= coyoteTime) && (inputFlags & INPUT_JUMP) > 0) {
-            vertical_movement += jumpAmount;
+        if ((onGround || coyoteTimeTimer <= coyoteTime) && (inputFlags & INPUT_JUMP) > 0 && jumpCooldownTimer > jumpCooldown) {
+            //vertical_movement += jumpAmount;
+            vertical_movement = jumpAmount + lastPlatformVelocity.y;
+            //if (!onGround) print("coyote jump! " + coyoteTimeTimer + "s");
             // make sure they don't have coyote time
             coyoteTimeTimer = coyoteTime + 1;
-            // add something that uses lastPlatformVelocity for coyote jumps
+            onGround = false;
+            jumpCooldownTimer = 0;
         }
 
         if ( Mathf.Abs(horizontal_movement) > Mathf.Abs(target_horizontal_movement) &&
              ((horizontal_movement > 0 && target_horizontal_movement > 0) ||
               (horizontal_movement < 0 && target_horizontal_movement < 0)) ) {
             // if the player is going fast, let them keep going fast
-            GetComponent<SpriteRenderer>().flipX = true;
         } else {
-            GetComponent<SpriteRenderer>().flipX = false;
             horizontal_movement = horizontal_movement * (1 - tightness) +
                                   target_horizontal_movement * tightness;
         }
@@ -84,6 +93,7 @@ public class DynamicCharacter : Character
         rb.velocity = velocity;
 
         coyoteTimeTimer += Time.fixedDeltaTime;
+        jumpCooldownTimer += Time.fixedDeltaTime;
 
         yield return new WaitForFixedUpdate();
         onGround = false;
@@ -95,7 +105,11 @@ public class DynamicCharacter : Character
     {
         if (Mathf.Abs(Vector2.Angle(contact.normal, Vector2.up)) <= steepestSlopeDegrees) {
             onGround = true;
-            lastPlatformVelocity = rb.velocity + contact.relativeVelocity;
+            if (contact.rigidbody) {
+                lastPlatformVelocity = contact.rigidbody.velocity;
+            } else {
+                lastPlatformVelocity = Vector2.zero;
+            }
         }
     }
 
