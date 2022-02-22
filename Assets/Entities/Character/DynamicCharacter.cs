@@ -20,6 +20,7 @@ public class DynamicCharacter : Character
     private CollisionData cd;
 
     [SerializeField] protected float moveSpeed = 4f;
+    [SerializeField] protected float tightness = 0.1f;
     
     protected int inputFlags = 0;
 
@@ -51,10 +52,13 @@ public class DynamicCharacter : Character
     {
         Vector2 velocity = rb.velocity;
 
-        float horizontal_movement = 0;
+        float horizontal_movement = velocity.x;
         float vertical_movement = velocity.y;
-        horizontal_movement += ((inputFlags & INPUT_RIGHT) > 0) ? 1f : 0f;
-        horizontal_movement += ((inputFlags & INPUT_LEFT) > 0) ? -1f : 0f;
+        float target_horizontal_movement = 0;
+        target_horizontal_movement += ((inputFlags & INPUT_RIGHT) > 0) ? 1f : 0f;
+        target_horizontal_movement += ((inputFlags & INPUT_LEFT) > 0) ? -1f : 0f;
+        target_horizontal_movement *= moveSpeed;
+        print(target_horizontal_movement);
         if (onGround) {
             coyoteTimeTimer = 0;
         }
@@ -64,7 +68,18 @@ public class DynamicCharacter : Character
             coyoteTimeTimer = coyoteTime + 1;
             // add something that uses lastPlatformVelocity for coyote jumps
         }
-        velocity = new Vector2(horizontal_movement * moveSpeed, vertical_movement);
+
+        if ( Mathf.Abs(horizontal_movement) > Mathf.Abs(target_horizontal_movement) &&
+             ((horizontal_movement > 0 && target_horizontal_movement > 0) ||
+              (horizontal_movement < 0 && target_horizontal_movement < 0)) ) {
+            // if the player is going fast, let them keep going fast
+            GetComponent<SpriteRenderer>().flipX = true;
+        } else {
+            GetComponent<SpriteRenderer>().flipX = false;
+            horizontal_movement = horizontal_movement * (1 - tightness) +
+                                  target_horizontal_movement * tightness;
+        }
+        velocity = new Vector2(horizontal_movement, vertical_movement);
         velocity += gravitationalAcceleration * Time.fixedDeltaTime;
         rb.velocity = velocity;
 
@@ -82,6 +97,22 @@ public class DynamicCharacter : Character
             onGround = true;
             lastPlatformVelocity = rb.velocity + contact.relativeVelocity;
         }
+    }
+
+    protected void RaycastWheel()
+    {
+        Vector2 origin = transform.position;
+        for (int i = 0; i < 60; i++) {
+            // map [0,60) to [0,2pi) 
+            float t = 2f * Mathf.PI * i / 60f;
+            Vector2 direction = new Vector2(Mathf.Cos(t), Mathf.Sin(t));
+            Physics2D.Raycast(origin, direction);
+        }
+    }
+
+    protected void AddVelocity(Vector2 vel)
+    {
+        rb.velocity += vel;
     }
 
     public virtual void DoAbilityPrimaryDown(Vector3 position)

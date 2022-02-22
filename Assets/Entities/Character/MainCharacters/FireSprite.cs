@@ -12,6 +12,9 @@ public class FireSprite : MainCharacter
 
     public float flameInterval = 0.08f;
     public float flameTimer = 0;
+    
+    [SerializeField] private float wallPushDistance = 1f;
+    [SerializeField] private LayerMask wallPushMask;
 
     public override void DoAbilityPrimaryDown(Vector3 position)
     {
@@ -29,6 +32,14 @@ public class FireSprite : MainCharacter
         Entity newFlame = Instantiate(flameSpawn, origin, Quaternion.identity);
         // this is gross
         newFlame.SetVelocity(direction);
+
+        RaycastHit2D ray_hit = Physics2D.Raycast(origin, direction, 1000f, wallPushMask);
+        if (ray_hit) {
+            if (ray_hit.distance < wallPushDistance) {
+                AddVelocity(-direction);
+            }
+        }
+        
         flameTimer = 0;
     }
     
