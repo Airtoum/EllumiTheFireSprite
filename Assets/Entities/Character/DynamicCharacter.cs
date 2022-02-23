@@ -31,7 +31,7 @@ public class DynamicCharacter : Character
     [SerializeField] protected Vector2 gravitationalAcceleration = Vector2.down;
 
     [SerializeField] protected float steepestSlopeDegrees = 45f;
-    private bool onGround = false;
+    protected bool onGround = false;
     [SerializeField] protected float jumpAmount = 5;
 
     [SerializeField] protected PhysicsMaterial2D staticMaterial;
@@ -80,9 +80,10 @@ public class DynamicCharacter : Character
             jumpCooldownTimer = 0;
         }
 
-        if ( Mathf.Abs(horizontal_movement) > Mathf.Abs(target_horizontal_movement) &&
+        if (!onGround && Mathf.Abs(horizontal_movement) > Mathf.Abs(target_horizontal_movement) &&
              ((horizontal_movement > 0 && target_horizontal_movement > 0) ||
-              (horizontal_movement < 0 && target_horizontal_movement < 0)) ) {
+              (horizontal_movement < 0 && target_horizontal_movement < 0) ||
+              (target_horizontal_movement == 0)                              ) ) {
             // if the player is going fast, let them keep going fast
         } else {
             horizontal_movement = horizontal_movement * (1 - tightness) +
