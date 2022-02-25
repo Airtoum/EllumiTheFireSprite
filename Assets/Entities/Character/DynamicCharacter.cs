@@ -16,6 +16,11 @@ public class DynamicCharacter : Character
     protected const int INPUT_JUMP = 1 << 4;
     protected const int INPUT_SPECIAL = 1 << 5;
 
+    protected enum AIMoves
+    {
+        Stop, Lateral, Up, Down, LateralUp
+    }
+
     private Rigidbody2D rb;
     private CollisionData cd;
     private Collider2D cl;
@@ -188,16 +193,41 @@ public class DynamicCharacter : Character
     protected void ExplorePlatform()
     {
         Vector2 pos = transform.position;
-        float left = ExploreLateral(pos, false, 0, 20);
-        float right = ExploreLateral(pos, true, 0, 20);
+        (float, AIMoves) left = ExploreLateral(pos, false, 0, 20);
+        (float, AIMoves) right = ExploreLateral(pos, true, 0, 20);
         float dist = Vector2.Distance(pos, AIDestination);
-        if (left < right) {
-            inputFlags = INPUT_LEFT;
+        int lateral_choice = 0;
+        AIMoves selected_input;
+        if (left.Item1 < right.Item1) {
+            lateral_choice = INPUT_LEFT;
+            selected_input = left.Item2;
         } else {
-            inputFlags = INPUT_RIGHT;
+            lateral_choice = INPUT_RIGHT;
+            selected_input = right.Item2;
         }
 
-        if (Mathf.Min(left, right) > dist - AICloseEnoughDistance) {
+        switch (selected_input) {
+            case AIMoves.Lateral:
+                inputFlags = lateral_choice;
+                break;
+            case AIMoves.LateralUp:
+                inputFlags = INPUT_JUMP | lateral_choice;
+                break;
+            case AIMoves.Up:
+                inputFlags = INPUT_JUMP;
+                break;
+            case AIMoves.Stop:
+                inputFlags = 0;
+                break;
+            case AIMoves.Down:
+                inputFlags = 0;
+                break;
+            default:
+                inputFlags = 0;
+                break;
+        }
+
+        if (Mathf.Min(left.Item1, right.Item1) > dist - AICloseEnoughDistance) {
             AIActivated = false;
         }
     }
@@ -209,72 +239,80 @@ public class DynamicCharacter : Character
     }
     
     // returns how close it gets to AIDestination on this path
-    protected float ExploreLateral(Vector2 pos, bool is_right, int depth, int max_depth)
+    protected (float, AIMoves) ExploreLateral(Vector2 pos, bool is_right, int depth, int max_depth)
     {
         float dist = Vector2.Distance(pos, AIDestination);
-        if (depth > max_depth) return dist;
+        if (depth > max_depth) return (dist, AIMoves.Stop);
         float dx = (is_right ? 1f : -1f) * cl.bounds.size.x;
         float dy = cl.bounds.size.y;
+        float best = Mathf.Min(dist);
         RaycastHit2D down = Physics2D.Raycast(pos, Vector2.down, AICliffDropDistance, AITerrainMask);
         if (down) {
             // there is ground beneath us
+            pos += Vector2.down * (down.distance - cl.bounds.extents.y);
             RaycastHit2D lateral = Physics2D.Raycast(pos, new Vector2(dx, 0f), Mathf.Abs(dx), AITerrainMask);
             if (lateral) {
                 // there's something to our side
                 Debug.DrawLine(lateral.point, lateral.point + lateral.normal, Color.yellow);
                 if (Mathf.Abs(Vector2.Angle(lateral.normal, Vector2.up)) <= steepestSlopeDegrees) {
                     // we've hit a slope, repeat higher
-                    float result = ExploreLateral(pos + new Vector2(dx, cl.bounds.size.y), is_right, depth, max_depth);
+                    (float, AIMoves) result = ExploreLateral(pos + new Vector2(dx, cl.bounds.size.y), is_right, depth, max_depth);
                     DebugSquare(pos, Color.yellow);
-                    return Mathf.Min(dist, result);
+                    best = Mathf.Min(best, result.Item1);
+                    return (best, result.Item2);
                 } else {
                     // we've hit a wall, Explore Wall
-                    float result = ExploreWall(pos, is_right, depth, max_depth, 0);
+                    (float, AIMoves) result = ExploreWall(pos, is_right, depth, max_depth, 0);
                     DebugSquare(pos, Color.magenta);
-                    return Mathf.Min(dist, result);
+                    best = Mathf.Min(best, result.Item1);
+                    return (best, AIMoves.LateralUp);
                 }
             } else {
                 // keep going
-                float result = ExploreLateral(pos + new Vector2(dx, 0f), is_right, depth + 1, max_depth);
+                (float, AIMoves) result = ExploreLateral(pos + new Vector2(dx, 0f), is_right, depth + 1, max_depth);
                 DebugSquare(pos, Color.green);
-                return Mathf.Min(dist, result);
+                best = Mathf.Min(best, result.Item1);
+                return (best, AIMoves.Lateral);
             }
         } else {
             // there was no ground found, this is an edge
             DebugSquare(pos, Color.red);
-            return dist;
+            return (best, AIMoves.Stop);
         }
     }
 
-    protected float ExploreWall(Vector2 pos, bool is_right, int depth, int max_depth, int wall_depth)
+    protected (float, AIMoves) ExploreWall(Vector2 pos, bool is_right, int depth, int max_depth, int wall_depth)
     {
         float dist = Vector2.Distance(pos, AIDestination);
-        if (depth > max_depth) return dist;
+        if (depth > max_depth) return (dist, AIMoves.Stop);
         float max_jump_height = - jumpAmount * jumpAmount / (2 * gravitationalAcceleration.y);
         float dy = cl.bounds.size.y;
         float dx = (is_right ? 1f : -1f) * cl.bounds.size.x;
-        int max_wall_depth = Mathf.FloorToInt(max_jump_height / dy); 
-        if (wall_depth > max_wall_depth) return dist;
-            
-        RaycastHit2D lateral = Physics2D.Raycast(pos, new Vector2(dx, 0f), dx, AITerrainMask);
+        int max_wall_depth = Mathf.RoundToInt(max_jump_height / dy); 
+        if (wall_depth > max_wall_depth) return (dist, AIMoves.Stop);
+        
+        float best = Mathf.Min(dist);
+        RaycastHit2D lateral = Physics2D.Raycast(pos, new Vector2(dx, 0f), Mathf.Abs(dx), AITerrainMask);
         if (lateral) {
             // the wall is still there
             RaycastHit2D up = Physics2D.Raycast(pos, Vector2.up, dy, AITerrainMask);
             if (up) {
                 // there is a ceiling
                 DebugDiamond(pos, Color.red);
-                return dist;
+                return (dist, AIMoves.Stop);
             } else {
                 // the wall continues up
-                float result = ExploreWall(pos + new Vector2(0f, dy), is_right, depth + 1, max_depth, wall_depth + 1);
+                (float, AIMoves) result = ExploreWall(pos + new Vector2(0f, dy), is_right, depth + 1, max_depth, wall_depth + 1);
                 DebugDiamond(pos, Color.magenta);
-                return Mathf.Min(dist, result);
+                best = Mathf.Min(best, result.Item1);
+                return (best, AIMoves.LateralUp);
             }
         } else {
             // the wall is gone, implies ground
-            float result = ExploreLateral(pos + new Vector2(dx, 0f), is_right, depth + 1, max_depth);
+            (float, AIMoves) result = ExploreLateral(pos + new Vector2(dx, 0f), is_right, depth + 1, max_depth);
             DebugDiamond(pos, Color.green);
-            return Mathf.Min(dist, result);
+            best = Mathf.Min(best, result.Item1);
+            return (best, AIMoves.Lateral);
         }
     }
     
