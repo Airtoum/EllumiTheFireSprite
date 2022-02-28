@@ -247,9 +247,14 @@ public class DynamicCharacter : Character
         float dy = cl.bounds.size.y;
         float best = Mathf.Min(dist);
         RaycastHit2D down = Physics2D.Raycast(pos, Vector2.down, AICliffDropDistance, AITerrainMask);
+        RaycastHit2D down_left = Physics2D.Raycast(pos + new Vector2(-cl.bounds.extents.x, 0), Vector2.down, AICliffDropDistance, AITerrainMask);
+        RaycastHit2D down_right = Physics2D.Raycast(pos + new Vector2(cl.bounds.extents.x, 0), Vector2.down, AICliffDropDistance, AITerrainMask);
         if (down) {
             // there is ground beneath us
-            pos += Vector2.down * (down.distance - cl.bounds.extents.y);
+            float highest_floor = down.distance;
+            if (down_left) highest_floor = Mathf.Min(highest_floor, down_left.distance);
+            if (down_right) highest_floor = Mathf.Min(highest_floor, down_right.distance);
+            pos += Vector2.down * (highest_floor - cl.bounds.extents.y);
             RaycastHit2D lateral = Physics2D.Raycast(pos, new Vector2(dx, 0f), Mathf.Abs(dx), AITerrainMask);
             if (lateral) {
                 // there's something to our side
