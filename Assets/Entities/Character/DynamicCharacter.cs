@@ -21,9 +21,9 @@ public class DynamicCharacter : Character
         Stop, Lateral, Up, Down, LateralUp
     }
 
-    private Rigidbody2D rb;
-    private CollisionData cd;
-    private Collider2D cl;
+    protected Rigidbody2D rb;
+    protected CollisionData cd;
+    protected Collider2D cl;
 
     [SerializeField] protected float moveSpeed = 4f;
     [SerializeField] protected float tightness = 0.1f;
@@ -48,7 +48,7 @@ public class DynamicCharacter : Character
     protected float jumpCooldown = 0.02f;
     protected float jumpCooldownTimer = 0;
 
-    [SerializeField] private LayerMask AITerrainMask;
+    [SerializeField] protected LayerMask AITerrainMask;
     [SerializeField] private float AILookDistance;
     [SerializeField] public bool AIActivated = false;
     [SerializeField] public Vector2 AIDestination;
@@ -66,11 +66,21 @@ public class DynamicCharacter : Character
     protected void FixedUpdate()
     {
         AIInput();
-        StartCoroutine(DoMovement());
+        StartCoroutine(DoCharacterPhysics());
     }
 
-    protected IEnumerator DoMovement()
+    protected IEnumerator DoCharacterPhysics()
     {
+        DoMovement();
+
+        yield return new WaitForFixedUpdate();
+        onGround = false;
+        cd.IterateOverCollisions(EvaluateCollision);
+    }
+
+    protected virtual void DoMovement()
+    {
+        print("base class");
         Vector2 velocity = rb.velocity;
 
         float horizontal_movement = velocity.x;
@@ -94,9 +104,9 @@ public class DynamicCharacter : Character
         }
 
         if (!onGround && Mathf.Abs(horizontal_movement) > Mathf.Abs(target_horizontal_movement) &&
-             ((horizontal_movement > 0 && target_horizontal_movement > 0) ||
-              (horizontal_movement < 0 && target_horizontal_movement < 0) ||
-              (target_horizontal_movement == 0)                              ) ) {
+            ((horizontal_movement > 0 && target_horizontal_movement > 0) ||
+             (horizontal_movement < 0 && target_horizontal_movement < 0) ||
+             (target_horizontal_movement == 0)                              ) ) {
             // if the player is going fast, let them keep going fast
         } else {
             horizontal_movement = horizontal_movement * (1 - tightness) +
@@ -108,11 +118,6 @@ public class DynamicCharacter : Character
 
         coyoteTimeTimer += Time.fixedDeltaTime;
         jumpCooldownTimer += Time.fixedDeltaTime;
-
-        yield return new WaitForFixedUpdate();
-        onGround = false;
-        cd.IterateOverCollisions(EvaluateCollision);
-        //GetComponent<SpriteRenderer>().flipX = onGround;
     }
 
     protected new void EvaluateCollision(Collision2D coll, ContactPoint2D contact)
@@ -160,7 +165,7 @@ public class DynamicCharacter : Character
         AIDestination = destination;
     }
 
-    protected void AIInput()
+    protected virtual void AIInput()
     {
         if (!AIActivated) return;
         if (Vector2.Distance(transform.position, AIDestination) <= AICloseEnoughDistance) {
