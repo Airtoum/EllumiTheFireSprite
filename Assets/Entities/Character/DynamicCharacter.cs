@@ -80,7 +80,6 @@ public class DynamicCharacter : Character
 
     protected virtual void DoMovement()
     {
-        print("base class");
         Vector2 velocity = rb.velocity;
 
         float horizontal_movement = velocity.x;
@@ -326,7 +325,7 @@ public class DynamicCharacter : Character
         }
     }
     
-    private void DebugSquare(Vector3 pos, Color color)
+    protected void DebugSquare(Vector3 pos, Color color)
     {
         Vector3 width = new Vector3(0.1f, 0f, 0f);
         Vector3 height = new Vector3(0f, 0.1f, 0f);
@@ -337,7 +336,7 @@ public class DynamicCharacter : Character
         Debug.DrawLine(start + height * 2, start + width * 2 + height * 2, color, 0, false);
     }
 
-    private void DebugDiamond(Vector3 pos, Color color)
+    protected void DebugDiamond(Vector3 pos, Color color)
     {
         Vector3 width = new Vector3(0.1f, 0f, 0f);
         Vector3 height = new Vector3(0f, 0.1f, 0f);
@@ -345,6 +344,17 @@ public class DynamicCharacter : Character
         Debug.DrawLine(pos - height, pos + width, color, 0, false);
         Debug.DrawLine(pos - width, pos + height, color, 0, false);
         Debug.DrawLine(pos + width, pos + height, color, 0, false);
+    }
+
+    protected void DebugCircle(Vector3 pos, Color color)
+    {
+        float angle_change = Mathf.PI / 8;
+        float radius = 0.1f;
+        for (float theta = 0; theta < 2 * Mathf.PI; theta += angle_change) {
+            Vector3 start = pos + new Vector3(Mathf.Cos(theta), Mathf.Sin(theta), 0f) * radius;
+            Vector3 end = pos + new Vector3(Mathf.Cos(theta + angle_change), Mathf.Sin(theta + angle_change), 0f) * radius;
+            Debug.DrawLine(start, end, color, 0, false);
+        }
     }
 
     protected void AddVelocity(Vector2 vel)

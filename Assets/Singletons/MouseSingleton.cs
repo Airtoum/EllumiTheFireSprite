@@ -12,6 +12,7 @@ public class MouseSingleton : MonoBehaviour
     private void Awake()
     {
         MouseSingleton.instance = this;
+        //EventHandler!!!
     }
 
     // Update is called once per frame
