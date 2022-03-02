@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
@@ -20,19 +21,24 @@ public class FireSprite : MainCharacter
 
     private bool firstPush = false;
 
-    public override void DoAbilityPrimaryDown(Vector3 position)
+    public void Awake()
+    {
+        GameEvents.OnPrimaryAbilityDown += DoAbilityPrimaryDown;
+    }
+    
+    public override void DoAbilityPrimaryDown(object sender, Vector3Args args)
     {
         flameTimer = flameInterval;
         firstPush = true;
     }
     
-    public override void DoAbilityPrimaryHold(Vector3 position)
+    public override void DoAbilityPrimaryHold(object sender, Vector3Args args)
     {
         flameTimer += Time.deltaTime;
         if (flameTimer < flameInterval) return;
         
         Vector3 origin = flameSpawnFrom.position;
-        Vector2 direction = position - origin;
+        Vector2 direction = args.pos - origin;
         direction = direction.normalized * flameSpeed;
         Entity newFlame = Instantiate(flameSpawn, origin, Quaternion.identity);
         // this is gross

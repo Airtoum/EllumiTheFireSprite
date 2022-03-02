@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -37,15 +38,27 @@ public class MainCharacter : DynamicCharacter
         base.FixedUpdate();
     }
 
-    public new virtual void DoAbilityPrimaryDown(Vector3 position)
+    public new virtual void DoAbilityPrimaryDown(object sender, Vector3Args args)
     {
-        // again, override
-        base.DoAbilityPrimaryDown(position);
+        // override with cool stuff
     }
     
-    public new virtual void DoAbilityPrimaryHold(Vector3 position)
+    public new virtual void DoAbilityPrimaryHold(object sender, Vector3Args args)
     {
-        // again, override
-        base.DoAbilityPrimaryHold(position);
+        // override with cool stuff
+    }
+    
+    public new virtual void DoAbilityPrimaryUp(object sender, Vector3Args args)
+    {
+        // override with cool stuff
+    }
+    
+    public new virtual void OnMoveToDown(object sender, Vector3Args args)
+    {
+        // override with cool stuff
+    }
+    public new virtual void OnMoveToUp(object sender, Vector3Args args)
+    {
+        // override with cool stuff
     }
 }

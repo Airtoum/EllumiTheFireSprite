@@ -362,12 +362,26 @@ public class DynamicCharacter : Character
         rb.velocity += vel;
     }
 
-    public virtual void DoAbilityPrimaryDown(Vector3 position)
+    public virtual void DoAbilityPrimaryDown(object sender, Vector3Args args)
     {
         // override with cool stuff
     }
     
-    public virtual void DoAbilityPrimaryHold(Vector3 position)
+    public virtual void DoAbilityPrimaryHold(object sender, Vector3Args args)
+    {
+        // override with cool stuff
+    }
+    
+    public virtual void DoAbilityPrimaryUp(object sender, Vector3Args args)
+    {
+        // override with cool stuff
+    }
+    
+    public virtual void OnMoveToDown(object sender, Vector3Args args)
+    {
+        // override with cool stuff
+    }
+    public virtual void OnMoveToUp(object sender, Vector3Args args)
     {
         // override with cool stuff
     }
