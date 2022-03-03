@@ -386,4 +386,9 @@ public class DynamicCharacter : Character
         // override with cool stuff
     }
 
+    public bool GetOnGround()
+    {
+        return onGround;
+    }
+
 }
