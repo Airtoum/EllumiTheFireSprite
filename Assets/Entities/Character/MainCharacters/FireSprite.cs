@@ -24,6 +24,8 @@ public class FireSprite : MainCharacter
     public void Awake()
     {
         GameEvents.OnPrimaryAbilityDown += DoAbilityPrimaryDown;
+        GameEvents.OnPrimaryAbilityHeld += DoAbilityPrimaryHold;
+        GameEvents.OnMoveToUp += OnMoveToUp;
     }
     
     public override void DoAbilityPrimaryDown(object sender, Vector3Args args)
@@ -69,5 +71,11 @@ public class FireSprite : MainCharacter
         }
 
     }
-    
+
+    public override void OnMoveToUp(object sender, Vector3Args args)
+    {
+        if (readyToMove && (controlMode == controlModes.TopHalf || controlMode == controlModes.NPC)) {
+            MoveToPoint(args.pos);
+        }
+    }
 }

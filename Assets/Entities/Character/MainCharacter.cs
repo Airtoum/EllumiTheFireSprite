@@ -15,6 +15,14 @@ public class MainCharacter : DynamicCharacter
     }
 
     public controlModes controlMode;
+    public bool readyToMove = false;
+
+    private void Awake()
+    {
+        GameEvents.PlayerRegainFullControl += OnPlayerRegainFullControl;
+        GameEvents.UnpairPlayerControls += OnUnpairPlayerControls;
+        GameEvents.SelectPositionPlayerControls += OnSelectPositionPlayerControls;
+    }
     
     // Start is called before the first frame update
     protected new void Start()
@@ -38,6 +46,38 @@ public class MainCharacter : DynamicCharacter
         base.FixedUpdate();
     }
 
+    private void OnPlayerRegainFullControl(object sender, EventArgs args)
+    {
+        if (controlMode == controlModes.BottomHalf) {
+            controlMode = controlModes.PlayerControl;
+        }
+        if (controlMode == controlModes.TopHalf) {
+            controlMode = controlModes.NPC;
+        }
+    }
+
+    private void OnUnpairPlayerControls(object sender, ObjectArgs args)
+    {
+        if (controlMode == controlModes.PlayerControl) {
+            controlMode = controlModes.BottomHalf;
+        }
+
+        if (controlMode == controlModes.NPC && gameObject == args.obj) {
+            controlMode = controlModes.TopHalf;
+        }
+    }
+
+    private void OnSelectPositionPlayerControls(object sender, ObjectArgs args)
+    {
+        if (controlMode == controlModes.PlayerControl) {
+            controlMode = controlModes.BottomHalf;
+        }
+        if (controlMode == controlModes.NPC && gameObject == args.obj) {
+            readyToMove = true;
+        }
+    }
+
+    
     public new virtual void DoAbilityPrimaryDown(object sender, Vector3Args args)
     {
         // override with cool stuff

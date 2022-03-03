@@ -237,4 +237,11 @@ public class AirSprite : MainCharacter
     static int MathMod(int a, int b) {
         return (Mathf.Abs(a * b) + a) % b;
     }
+    
+    public override void OnMoveToUp(object sender, Vector3Args args)
+    {
+        if (readyToMove && (controlMode == controlModes.TopHalf || controlMode == controlModes.NPC)) {
+            MoveToPoint(args.pos);
+        }
+    }
 }
