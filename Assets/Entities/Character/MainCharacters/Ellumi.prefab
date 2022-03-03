@@ -141,7 +141,7 @@ MonoBehaviour:
   coyoteTime: 0.11
   gravitationalAcceleration: {x: 0, y: -30}
   steepestSlopeDegrees: 45
-  jumpAmount: 12
+  jumpAmount: 14
   staticMaterial: {fileID: 6200000, guid: 06d2103c666efc04584ae2846c817021, type: 2}
   dynamicMaterial: {fileID: 6200000, guid: 2cdf0ac082454ec45a619959f8dd0658, type: 2}
   AITerrainMask:
