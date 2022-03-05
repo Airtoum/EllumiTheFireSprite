@@ -18,6 +18,12 @@ public class MainCharacterArgs : EventArgs
     public MainCharacter main_char;
 }
 
+public class DialogueArgs : EventArgs
+{
+    public MainCharacter main_char;
+    public Dialogue dialogue;
+}
+
 public class GameEvents
 {
     public static EventHandler<Vector3Args> OnPrimaryAbilityDown;
@@ -30,6 +36,9 @@ public class GameEvents
     public static EventHandler PlayerRegainFullControl;
     public static EventHandler<ObjectArgs> UnpairPlayerControls;
     public static EventHandler<ObjectArgs> SelectPositionPlayerControls;
+
+    public static EventHandler<DialogueArgs> StartDialogue;
+    public static EventHandler EndDialogue;
 
     public static void InvokePrimaryAbilityDown(Vector3 position)
     {
@@ -70,5 +79,16 @@ public class GameEvents
     {
         if (SelectPositionPlayerControls == null) return;
         SelectPositionPlayerControls(null, new ObjectArgs{obj = helper});
+    }
+    public static void InvokeStartDialogue(MainCharacter talk_to, Dialogue the_dialogue)
+    {
+        if (StartDialogue == null) return;
+        StartDialogue(null, new DialogueArgs {main_char = talk_to, dialogue = the_dialogue});
+    }
+
+    public static void InvokeEndDialogue()
+    {
+        if (EndDialogue == null) return;
+        EndDialogue(null, EventArgs.Empty);
     }
 }

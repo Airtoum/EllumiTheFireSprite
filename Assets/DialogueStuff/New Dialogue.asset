@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6517bdd55252aac4d92669d63ec4a0ff, type: 3}
+  m_Name: New Dialogue
+  m_EditorClassIdentifier: 
+  sentences: []
+  pages:
+  - text: This is a test... |||||||||||| of the dialogue system.
+    speaker: Airtoum
+    speakerColor: {r: 1, g: 0, b: 0.95353603, a: 1}
+    hasOptions: 0
+    options:
+    - text: 
+      action: 
+    typeInterval: 0.04
+  - text: It's successful!
+    speaker: Airtoum
+    speakerColor: {r: 1, g: 0, b: 0.95353603, a: 1}
+    hasOptions: 0
+    options:
+    - text: 
+      action: 
+    typeInterval: 0.01
+  - text: What do you think?
+    speaker: Airtoum
+    speakerColor: {r: 1, g: 0, b: 0.95353603, a: 1}
+    hasOptions: 0
+    options:
+    - text: It's good
+      action: None
+    - text: It's bad
+      action: None
+    - text: It's ok
+      action: None
+    typeInterval: 0

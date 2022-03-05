@@ -55,6 +55,8 @@ public class DynamicCharacter : Character
     [SerializeField] public float AICloseEnoughDistance;
     [SerializeField] public float AICliffDropDistance = 6f;
 
+    [SerializeField] public bool facingLeft = false;
+
     protected void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -72,7 +74,7 @@ public class DynamicCharacter : Character
     protected IEnumerator DoCharacterPhysics()
     {
         DoMovement();
-
+        SetFacing();
         yield return new WaitForFixedUpdate();
         onGround = false;
         cd.IterateOverCollisions(EvaluateCollision);
@@ -117,6 +119,18 @@ public class DynamicCharacter : Character
 
         coyoteTimeTimer += Time.fixedDeltaTime;
         jumpCooldownTimer += Time.fixedDeltaTime;
+    }
+
+    public void SetFacing()
+    {
+        bool press_left = (inputFlags & INPUT_RIGHT) > 0;
+        bool press_right = (inputFlags & INPUT_LEFT) > 0;
+        if (press_left && press_right) {
+        } else if (press_left) {
+            facingLeft = true;
+        } else if (press_right) {
+            facingLeft = false;
+        }
     }
 
     protected new void EvaluateCollision(Collision2D coll, ContactPoint2D contact)
