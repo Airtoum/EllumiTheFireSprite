@@ -12,8 +12,11 @@ public class Flame : Substance
     private void OnCollisionEnter2D(Collision2D other) 
     {
         Debug.Log("Collision Detected");
-        Substance triggerSubstance = other.gameObject.GetComponent<Substance>();
-        SubstanceInteract(triggerSubstance);
+        if (other.gameObject.GetComponent<Substance>() != null)
+        { 
+            Substance triggerSubstance = other.gameObject.GetComponent<Substance>();
+            SubstanceInteract(triggerSubstance);
+        }
     }
 
     public override void SubstanceInteract(Substance triggerSubstance)
@@ -21,10 +24,6 @@ public class Flame : Substance
         if (triggerSubstance.GetSubstanceType() == "Water")
         {
             Destroy(this.gameObject, 1);
-        }
-        else if (triggerSubstance.GetSubstanceType() == "Wood")
-        {
-            Destroy(triggerSubstance.gameObject, 2);
         }
     }
 }

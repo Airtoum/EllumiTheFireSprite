@@ -5,7 +5,6 @@ using UnityEngine;
 public class Substance : MonoBehaviour
 {
     public string type;
-    BoxCollider2D subCollider;
 
     void Start()
     {
