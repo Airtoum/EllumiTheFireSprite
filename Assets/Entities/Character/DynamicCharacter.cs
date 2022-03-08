@@ -123,8 +123,8 @@ public class DynamicCharacter : Character
 
     public void SetFacing()
     {
-        bool press_left = (inputFlags & INPUT_RIGHT) > 0;
-        bool press_right = (inputFlags & INPUT_LEFT) > 0;
+        bool press_left = (inputFlags & INPUT_LEFT) > 0;
+        bool press_right = (inputFlags & INPUT_RIGHT) > 0;
         if (press_left && press_right) {
         } else if (press_left) {
             facingLeft = true;

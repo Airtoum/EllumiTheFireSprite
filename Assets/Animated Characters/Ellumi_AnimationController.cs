@@ -53,7 +53,7 @@ public class Ellumi_AnimationController : MonoBehaviour
 
     void FlipCheck()
     {
-        if (!ellumiScript.facingLeft)
+        if (ellumiScript.facingLeft)
         {
             this.transform.parent.transform.localScale = new Vector3(-1 * xScale, this.transform.parent.transform.localScale.y, this.transform.parent.transform.localScale.z);
         }
