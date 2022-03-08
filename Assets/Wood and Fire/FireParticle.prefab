@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 366425063220301987}
   - component: {fileID: 366425063220301984}
   - component: {fileID: 366425063220301985}
-  - component: {fileID: 366425063220301990}
   - component: {fileID: 366425063220301986}
-  - component: {fileID: 6744835881410684099}
-  m_Layer: 0
+  - component: {fileID: -5832496545001127435}
+  - component: {fileID: 3999331025085245803}
+  m_Layer: 6
   m_Name: FireParticle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -51,7 +51,7 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 20
   m_Sprite: {fileID: 21300000, guid: d9ab87c3b28c87541988aba1d364b13f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -99,22 +99,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 
---- !u!58 &366425063220301990
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 366425063220301991}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.10955921, y: 0}
-  serializedVersion: 2
-  m_Radius: 7.3549457
+  player: {fileID: 4115434783252314970, guid: ae8006234f331a94284bf6284c776fac, type: 3}
 --- !u!50 &366425063220301986
 Rigidbody2D:
   serializedVersion: 4
@@ -136,7 +121,23 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &6744835881410684099
+--- !u!58 &-5832496545001127435
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 366425063220301991}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 3.6406884
+--- !u!114 &3999331025085245803
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -145,8 +146,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 366425063220301991}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba9c0315de3b91d49b01b65f28452cc1, type: 3}
+  m_Script: {fileID: 11500000, guid: 93109369119eb254680cb21198f628bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  usesFauxVelocity: 1
-  lifeLeft: 0
+  usesFauxVelocity: 0
+  lifeTimer: 2.5

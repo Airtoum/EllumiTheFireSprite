@@ -49,6 +49,15 @@ public class Wood : Substance
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D other) 
+    {
+        if (other.gameObject.GetComponent<Substance>() != null)
+        { 
+            Substance triggerSubstance = other.gameObject.GetComponent<Substance>();
+            SubstanceInteract(triggerSubstance);
+        }
+    }
+
     public override void SubstanceInteract(Substance triggerSubstance)
     {
         if (triggerSubstance.GetSubstanceType() == "Flame")
