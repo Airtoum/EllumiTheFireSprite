@@ -16,24 +16,17 @@ MonoBehaviour:
   pages:
   - text: This is a test... |||||||||||| of the dialogue system.
     speaker: Airtoum
-    speakerColor: {r: 1, g: 0, b: 0.95353603, a: 1}
-    hasOptions: 0
-    options:
-    - text: 
-      action: 
-    typeInterval: 0.04
+    speakerColor: {r: 1, g: 0.44716978, b: 0.9739846, a: 1}
+    options: []
+    typeInterval: 0.02
   - text: It's successful!
     speaker: Airtoum
-    speakerColor: {r: 1, g: 0, b: 0.95353603, a: 1}
-    hasOptions: 0
-    options:
-    - text: 
-      action: 
+    speakerColor: {r: 1, g: 0.44705883, b: 0.972549, a: 1}
+    options: []
     typeInterval: 0.01
   - text: What do you think?
     speaker: Airtoum
-    speakerColor: {r: 1, g: 0, b: 0.95353603, a: 1}
-    hasOptions: 0
+    speakerColor: {r: 1, g: 0.44705883, b: 0.972549, a: 1}
     options:
     - text: It's good
       action: None
@@ -42,3 +35,19 @@ MonoBehaviour:
     - text: It's ok
       action: None
     typeInterval: 0
+  - text: Let's test out some stuff
+    speaker: Airtoum
+    speakerColor: {r: 1, g: 0.44705883, b: 0.972549, a: 1}
+    options:
+    - text: Talk
+      action: None
+    - text: Move
+      action: Move
+    - text: Ability
+      action: Ability
+    typeInterval: 0
+  - text: Hello! This dialogue should only be accessible if you had chosen "Talk".
+    speaker: Airtoum
+    speakerColor: {r: 1, g: 0.44705883, b: 0.972549, a: 1}
+    options: []
+    typeInterval: 0.03

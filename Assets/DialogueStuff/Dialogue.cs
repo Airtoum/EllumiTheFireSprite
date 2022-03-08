@@ -20,7 +20,7 @@ public struct page
     public string speaker;
     [ColorUsage(false)]
     public Color speakerColor;
-    public bool hasOptions;
+    //public bool hasOptions;
     public option[] options;
     [Tooltip("Number of seconds between characters being typed.")]
     public float typeInterval;

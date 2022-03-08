@@ -21,21 +21,24 @@ public class FireSprite : MainCharacter
 
     private bool firstPush = false;
 
-    public void Awake()
+    protected new void Awake()
     {
         GameEvents.OnPrimaryAbilityDown += DoAbilityPrimaryDown;
         GameEvents.OnPrimaryAbilityHeld += DoAbilityPrimaryHold;
         GameEvents.OnMoveToUp += OnMoveToUp;
+        base.Awake();
     }
     
     public override void DoAbilityPrimaryDown(object sender, Vector3Args args)
     {
+        if (!CanDoAbility()) return;
         flameTimer = flameInterval;
         firstPush = true;
     }
     
     public override void DoAbilityPrimaryHold(object sender, Vector3Args args)
     {
+        if (!CanDoAbility()) return;
         flameTimer += Time.deltaTime;
         if (flameTimer < flameInterval) return;
         
@@ -49,6 +52,13 @@ public class FireSprite : MainCharacter
         flameTimer = 0;
         
         FirePush(origin, direction);
+    }
+
+    public override void DoAbilityPrimaryUp(object sender, Vector3Args args)
+    {
+        if (controlMode == controlModes.TopHalf) {
+            GameEvents.InvokePlayerRegainFullControl();
+        }
     }
 
     private void FirePush(Vector2 origin, Vector2 direction)
@@ -74,7 +84,7 @@ public class FireSprite : MainCharacter
 
     public override void OnMoveToUp(object sender, Vector3Args args)
     {
-        if (readyToMove && (controlMode == controlModes.TopHalf || controlMode == controlModes.NPC)) {
+        if (readyToMove && (controlMode == controlModes.BottomHalf || controlMode == controlModes.NPC)) {
             MoveToPoint(args.pos);
         }
     }

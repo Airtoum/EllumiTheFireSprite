@@ -7,6 +7,7 @@ public class MouseSingleton : MonoBehaviour
 {
     public static MouseSingleton instance;
     public MainCharacter currentCharacter;
+    public bool isInCutscene = false;
     
     public enum MouseModes
     {
@@ -23,11 +24,16 @@ public class MouseSingleton : MonoBehaviour
         MouseSingleton.instance = this;
         GameEvents.UnpairPlayerControls += OnUnpairPlayerControls;
         GameEvents.SelectPositionPlayerControls += OnSelectPositionPlayerControls;
+
+        GameEvents.StartDialogue += OnStartDialogue;
+        GameEvents.EndDialogue += OnEndDialogue;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (isInCutscene) return;
+        
         // if LMB
         if (Input.GetMouseButtonDown(0)) {
             Vector3 clickPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -86,6 +92,16 @@ public class MouseSingleton : MonoBehaviour
         } else {
             Debug.LogWarning(args.obj.name + " is not a MainCharacter, but is being asked to redistribute the controls.");
         }
+    }
+
+    void OnStartDialogue(object sender, DialogueArgs args)
+    {
+        isInCutscene = true;
+    }
+
+    void OnEndDialogue(object sender, EventArgs args)
+    {
+        isInCutscene = false;
     }
     
 }

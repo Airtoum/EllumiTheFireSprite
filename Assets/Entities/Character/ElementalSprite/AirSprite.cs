@@ -1,13 +1,28 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
+using Unity.Mathematics;
 using UnityEngine;
 using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 public class AirSprite : MainCharacter
 {
 
-    [SerializeField] protected float AIReachedWallDistance = 1.2f; 
+    [SerializeField] protected float AIReachedWallDistance = 1.2f;
+
+    public GameObject windSpawn;
+    public Vector3 firstPoint;
+    public Vector3 secondPoint;
+    public bool startNewWind = true;
+
+    protected new void Awake()
+    {
+        GameEvents.OnPrimaryAbilityDown += DoAbilityPrimaryDown;
+        
+        base.Awake();
+    }
     
     protected override void DoMovement()
     {
@@ -237,10 +252,31 @@ public class AirSprite : MainCharacter
     static int MathMod(int a, int b) {
         return (Mathf.Abs(a * b) + a) % b;
     }
-    
+
+    public override void DoAbilityPrimaryDown(object sender, Vector3Args args)
+    {
+        if (!CanDoAbility()) return;
+        if (startNewWind) {
+            firstPoint = args.pos;
+            startNewWind = false;
+        } else {
+            secondPoint = args.pos;
+            // delete this and replace with correct things later!
+            Instantiate(windSpawn, firstPoint, quaternion.identity);
+            Instantiate(windSpawn, 0.75f * firstPoint + 0.25f * secondPoint, quaternion.identity);
+            Instantiate(windSpawn, 0.5f * firstPoint + 0.5f * secondPoint, quaternion.identity);
+            Instantiate(windSpawn, 0.25f * firstPoint + 0.75f * secondPoint, quaternion.identity);
+            Instantiate(windSpawn, secondPoint, quaternion.identity);
+            startNewWind = true;
+            if (controlMode == controlModes.TopHalf) {
+                GameEvents.InvokePlayerRegainFullControl();
+            }
+        }
+    }
+
     public override void OnMoveToUp(object sender, Vector3Args args)
     {
-        if (readyToMove && (controlMode == controlModes.TopHalf || controlMode == controlModes.NPC)) {
+        if (readyToMove && (controlMode == controlModes.BottomHalf || controlMode == controlModes.NPC)) {
             MoveToPoint(args.pos);
         }
     }

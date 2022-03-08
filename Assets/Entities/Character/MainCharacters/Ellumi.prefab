@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 4115434783252314964}
   m_Layer: 6
   m_Name: Ellumi
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -152,6 +152,7 @@ MonoBehaviour:
   AIDestination: {x: 0, y: 0}
   AICloseEnoughDistance: 0.4
   AICliffDropDistance: 6
+  facingLeft: 0
   controlMode: 0
   readyToMove: 0
   flameSpawn: {fileID: 2348945602394527888, guid: 6ec74dc059d19694ea16b64be6e29c94, type: 3}

@@ -8,10 +8,15 @@ public class DialogueTrigger : MonoBehaviour
     public Dialogue dialogue;
     public MainCharacter character;
 
+    public bool oneOff = true;
+    public bool triggeredYet = false;
+
     void Update() {
-        if (entered && Input.GetKeyUp(KeyCode.E) /*&& !FindObjectOfType<DialogueManager>().triggered*/) {
+        if (entered /*&& Input.GetKeyUp(KeyCode.E)*/ /*&& !FindObjectOfType<DialogueManager>().triggered*/) {
+            triggeredYet = true;
             TriggerDialogue();
             //StartCoroutine(TriggerNextDialogue());
+            enabled = false;
         }
     }
 
@@ -36,10 +41,14 @@ public class DialogueTrigger : MonoBehaviour
     */
 
     void OnTriggerStay2D(Collider2D other) {
-        entered = true;
+        if (other.CompareTag("Player")) {
+            entered = true;
+        }
     }
 
     void OnTriggerExit2D(Collider2D other) {
-        entered = false;
+        if (other.CompareTag("Player")) {
+            entered = false;
+        }
     }
 }
