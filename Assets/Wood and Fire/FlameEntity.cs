@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,5 +21,10 @@ public class FlameEntity : Entity
         {
             Destroy(this.gameObject);
         }
+    }
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        print(other.gameObject.name);
     }
 }
