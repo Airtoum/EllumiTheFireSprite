@@ -36,16 +36,26 @@ public class FollowCharacter : MonoBehaviour
         Vector3 follow_pos = follow.transform.position;
         bool follow_on_ground = follow.GetOnGround();
         target_pos.x = follow_pos.x + offset.x;
-        if (follow_on_ground) {
+        if (follow_on_ground || follow_pos.y < (target_pos.y + offset.y)) {
             target_pos.y = follow_pos.y + offset.y;
         }
+        
         for (int i = 0; i < CameraConstraints.Constraints.Count; i++) {
             CameraConstraint constraint = CameraConstraints.Constraints[i];
             (Vector3, float) result = constraint.ModifyCamera(target_pos, zoom, camera_vertical_extent, camera_horizontal_extent, follow, follow_pos, follow_on_ground);
             target_pos = result.Item1;
             zoom = result.Item2;
         }
-        transform.position = Vector3.MoveTowards(pos, target_pos, scrollSpeed * Time.deltaTime);
+        
+        //transform.position = Vector3.MoveTowards(pos, target_pos, scrollSpeed * Time.deltaTime);
+        Vector3 diff = (target_pos - pos);
+        if (diff.magnitude <= scrollSpeed * Time.deltaTime) {
+            transform.position = target_pos;
+            //print("reached!");
+        } else {
+            transform.position += diff.normalized * scrollSpeed * Time.deltaTime;
+            //print("chasing!");
+        }
         cam.orthographicSize += Mathf.Clamp(zoom - camera_vertical_extent, -zoomSpeed * Time.deltaTime, zoomSpeed * Time.deltaTime);
     }
 }

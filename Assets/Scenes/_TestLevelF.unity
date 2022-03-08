@@ -9784,7 +9784,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   follow: {fileID: 1083948187}
   offset: {x: 0, y: 0, z: -10}
-  zoom: 5
+  zoom: 1
   scrollSpeed: 10
   zoomSpeed: 10
 --- !u!114 &982404165
