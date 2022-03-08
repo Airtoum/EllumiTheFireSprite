@@ -125,6 +125,7 @@ public class DialogueBox : MonoBehaviour
             are_there_options = true;
         } else {
             are_there_options = false;
+            HideOptions();
         }
 
         //Debug.Log(sentence);
