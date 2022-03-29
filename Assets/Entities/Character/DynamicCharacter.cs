@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
@@ -18,7 +19,12 @@ public class DynamicCharacter : Character
 
     protected enum AIMoves
     {
-        Stop, Lateral, Up, Down, LateralUp
+        Stop, Lateral, Up, Down, LateralUp, JumpSideways, JumpUpwards, JumpBackwards
+    }
+
+    protected enum AISearchStates
+    {
+        Lateral, Wall, Jump
     }
 
     protected Rigidbody2D rb;
@@ -54,6 +60,14 @@ public class DynamicCharacter : Character
     [SerializeField] public Vector2 AIDestination;
     [SerializeField] public float AICloseEnoughDistance;
     [SerializeField] public float AICliffDropDistance = 6f;
+    [SerializeField] public int AIMaxDepth;
+    private int debug_AINodeCount = 0;
+    private int debug_AILandFromJumpCount = 0;
+    [SerializeField] private TextMeshProUGUI debug_text;
+    [SerializeField] public float AIJumpPenalization = 0.4f;
+    private Dictionary<(Vector2, AISearchStates), int> AIVisited = new Dictionary<(Vector2, AISearchStates), int>();
+    [SerializeField] public float AIGridFineness = 0.4f;
+    [SerializeField] public float AIDepthPenalty = 0.2f;
 
     [SerializeField] public bool facingLeft = false;
 
@@ -69,6 +83,7 @@ public class DynamicCharacter : Character
     {
         AIInput();
         StartCoroutine(DoCharacterPhysics());
+        debug_text.text = AIVisited.Count.ToString();
     }
 
     protected IEnumerator DoCharacterPhysics()
@@ -183,6 +198,7 @@ public class DynamicCharacter : Character
         if (!AIActivated) return;
         if (Vector2.Distance(transform.position, AIDestination) <= AICloseEnoughDistance) {
             AIActivated = false;
+            inputFlags = 0;
             return;
             // perhaps allow for chaining of MoveToPoints in a sequence
         }
@@ -210,18 +226,43 @@ public class DynamicCharacter : Character
 
     protected void ExplorePlatform()
     {
+        debug_AINodeCount = 0;
+        debug_AILandFromJumpCount = 0;
+        AIVisited.Clear();
+        
         Vector2 pos = transform.position;
-        (float, AIMoves) left = ExploreLateral(pos, false, 0, 20);
-        (float, AIMoves) right = ExploreLateral(pos, true, 0, 20);
+        float jump_vel = (onGround || coyoteTimeTimer <= coyoteTime) && jumpCooldownTimer > jumpCooldown
+            ? jumpAmount
+            : rb.velocity.y;
+        
         float dist = Vector2.Distance(pos, AIDestination);
         int lateral_choice = 0;
-        AIMoves selected_input;
-        if (left.Item1 < right.Item1) {
-            lateral_choice = INPUT_LEFT;
-            selected_input = left.Item2;
+        int backward_choice = 0;
+        List<Vector2> chosen_path = new List<Vector2>();
+        AIMoves selected_input = AIMoves.Stop;
+        float best_score = float.MaxValue;
+        void FindBest((float, AIMoves, List<Vector2>) search, int lat_chc, int bak_chc)
+        {
+            if (search.Item1 < best_score) {
+                best_score = search.Item1;
+                selected_input = search.Item2;
+                chosen_path = search.Item3;
+                lateral_choice = lat_chc;
+                backward_choice = bak_chc;
+            }
+        }
+        if (onGround) {
+            (float, AIMoves, List<Vector2>) left = ExploreLateral(pos, false, 0, AIMaxDepth);
+            (float, AIMoves, List<Vector2>) right = ExploreLateral(pos, true, 0, AIMaxDepth);
+            FindBest(left, INPUT_LEFT, INPUT_RIGHT);
+            FindBest(right, INPUT_RIGHT, INPUT_LEFT);
         } else {
-            lateral_choice = INPUT_RIGHT;
-            selected_input = right.Item2;
+            (float, AIMoves, List<Vector2>) jump = ExploreJump(pos, jump_vel, 0, 0, AIMaxDepth);
+            (float, AIMoves, List<Vector2>) jump_left = ExploreJump(pos, jump_vel, -1, 0, AIMaxDepth);
+            (float, AIMoves, List<Vector2>) jump_right = ExploreJump(pos, jump_vel, 1, 0, AIMaxDepth);
+            FindBest(jump, 0, 0);
+            FindBest(jump_left, INPUT_LEFT, INPUT_RIGHT);
+            FindBest(jump_right, INPUT_RIGHT, INPUT_LEFT);
         }
 
         switch (selected_input) {
@@ -240,30 +281,89 @@ public class DynamicCharacter : Character
             case AIMoves.Down:
                 inputFlags = 0;
                 break;
+            case AIMoves.JumpSideways:
+                inputFlags = INPUT_JUMP | lateral_choice;
+                break;
+            case AIMoves.JumpUpwards:
+                inputFlags = INPUT_JUMP;
+                break;
+            case AIMoves.JumpBackwards:
+                inputFlags = INPUT_JUMP | backward_choice;
+                break;
             default:
                 inputFlags = 0;
                 break;
         }
 
-        if (Mathf.Min(left.Item1, right.Item1) > dist - AICloseEnoughDistance) {
+        for(int i = 0; i < chosen_path.Count - 1; i++) {
+            Vector2 start = chosen_path[i];
+            Vector2 end = chosen_path[i + 1];
+            Debug.DrawLine(start, end, Color.white);
+        }
+
+        if (best_score > dist - AICloseEnoughDistance) {
             AIActivated = false;
+            inputFlags = 0;
         }
     }
 
-    protected float ExploreDown(Vector2 pos, bool is_right, int depth, int max_depth)
+    // we don't want a long path, so lower depth is better
+    protected float ScoreHeuristic(float distance, int depth)
     {
-        // not implemented
-        return 0;
+        return distance * (depth * AIDepthPenalty);
+    }
+
+    protected bool HaveWeDoneBetter(Vector2 pos, AISearchStates state, int depth)
+    {
+        
+        pos.x = Mathf.Floor(pos.x * AIGridFineness);
+        pos.y = Mathf.Floor(pos.y * AIGridFineness);
+        (Vector2, AISearchStates) key = (pos, state); 
+        if (AIVisited.ContainsKey(key)) {
+            if (AIVisited[key] < depth) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected void MarkVisited(Vector2 pos, AISearchStates state, int depth)
+    {
+        pos.x = Mathf.Floor(pos.x * AIGridFineness);
+        pos.y = Mathf.Floor(pos.y * AIGridFineness);
+        (Vector2, AISearchStates) key = (pos, state);
+        if (AIVisited.ContainsKey(key)) {
+            AIVisited[key] = Mathf.Min(AIVisited[key], depth);
+        } else {
+            AIVisited[key] = depth;
+        }
     }
     
     // returns how close it gets to AIDestination on this path
-    protected (float, AIMoves) ExploreLateral(Vector2 pos, bool is_right, int depth, int max_depth)
+    protected (float, AIMoves, List<Vector2>) ExploreLateral(Vector2 pos, bool is_right, int depth, int max_depth)
     {
-        float dist = Vector2.Distance(pos, AIDestination);
-        if (depth > max_depth) return (dist, AIMoves.Stop);
+        debug_AINodeCount += 1;
+        
+        float best = Vector2.Distance(pos, AIDestination);
+        AIMoves move = AIMoves.Stop;
+        List<Vector2> path = new List<Vector2>();
+
+        if (depth > max_depth) return (best, move, path);
+        if (HaveWeDoneBetter(pos, AISearchStates.Lateral, depth)) return (float.MaxValue, move, path);
+        MarkVisited(pos, AISearchStates.Lateral, depth);
+            
         float dx = (is_right ? 1f : -1f) * cl.bounds.size.x;
         float dy = cl.bounds.size.y;
-        float best = Mathf.Min(dist);
+
+        void CheckIfBetter(float score, AIMoves action, List<Vector2> trace)
+        {
+            if (score < best) {
+                best = score;
+                move = action;
+                path = trace;
+            }
+        }
+        
         RaycastHit2D down = Physics2D.Raycast(pos, Vector2.down, AICliffDropDistance, AITerrainMask);
         RaycastHit2D down_left = Physics2D.Raycast(pos + new Vector2(-cl.bounds.extents.x, 0), Vector2.down, AICliffDropDistance, AITerrainMask);
         RaycastHit2D down_right = Physics2D.Raycast(pos + new Vector2(cl.bounds.extents.x, 0), Vector2.down, AICliffDropDistance, AITerrainMask);
@@ -272,49 +372,78 @@ public class DynamicCharacter : Character
             float highest_floor = down.distance;
             if (down_left) highest_floor = Mathf.Min(highest_floor, down_left.distance);
             if (down_right) highest_floor = Mathf.Min(highest_floor, down_right.distance);
-            pos += Vector2.down * (highest_floor - cl.bounds.extents.y);
+            Vector2 adjusted_pos = pos + Vector2.down * (highest_floor - cl.bounds.extents.y);
+            best = Mathf.Min(best, Ultramath.DistanceToLineSegment(AIDestination, pos, adjusted_pos));
+            pos = adjusted_pos;
             RaycastHit2D lateral = Physics2D.Raycast(pos, new Vector2(dx, 0f), Mathf.Abs(dx), AITerrainMask);
             if (lateral) {
                 // there's something to our side
                 Debug.DrawLine(lateral.point, lateral.point + lateral.normal, Color.yellow);
                 if (Mathf.Abs(Vector2.Angle(lateral.normal, Vector2.up)) <= steepestSlopeDegrees) {
                     // we've hit a slope, repeat higher
-                    (float, AIMoves) result = ExploreLateral(pos + new Vector2(dx, cl.bounds.size.y), is_right, depth, max_depth);
+                    (float, AIMoves, List<Vector2>) result = ExploreLateral(pos + new Vector2(dx, cl.bounds.size.y), is_right, depth, max_depth);
                     DebugSquare(pos, Color.yellow);
-                    best = Mathf.Min(best, result.Item1);
-                    return (best, result.Item2);
+                    CheckIfBetter(result.Item1, result.Item2, result.Item3);
                 } else {
                     // we've hit a wall, Explore Wall
-                    (float, AIMoves) result = ExploreWall(pos, is_right, depth, max_depth, 0);
+                    (float, AIMoves, List<Vector2>) result = ExploreWall(pos, is_right, depth, max_depth, 0);
                     DebugSquare(pos, Color.magenta);
-                    best = Mathf.Min(best, result.Item1);
-                    return (best, AIMoves.LateralUp);
+                    CheckIfBetter(result.Item1, AIMoves.LateralUp, result.Item3);
                 }
             } else {
                 // keep going
-                (float, AIMoves) result = ExploreLateral(pos + new Vector2(dx, 0f), is_right, depth + 1, max_depth);
                 DebugSquare(pos, Color.green);
-                best = Mathf.Min(best, result.Item1);
-                return (best, AIMoves.Lateral);
+                Vector2 adjusted_pos_again = pos + new Vector2(dx, 0f);
+                best = Mathf.Min(best, Ultramath.DistanceToLineSegment(AIDestination, pos, adjusted_pos_again));
+                pos = adjusted_pos_again;
+                (float, AIMoves, List<Vector2>) result_walk = ExploreLateral(pos, is_right, depth + 1, max_depth);
+                (float, AIMoves, List<Vector2>) result_jump_forward = ExploreJump(pos, jumpAmount, (is_right ? 1 : -1), depth + 1, max_depth);
+                //(float, AIMoves, List<Vector2>) result_jump_up = ExploreJump(pos, jumpAmount, 0, depth + 1, max_depth);
+                (float, AIMoves, List<Vector2>) result_jump_back = ExploreJump(pos, jumpAmount, (is_right ? -1 : 1), depth + 1, max_depth);
+                CheckIfBetter(result_walk.Item1, AIMoves.Lateral, result_walk.Item3);
+                CheckIfBetter(result_jump_forward.Item1 + AIJumpPenalization, AIMoves.JumpSideways, result_jump_forward.Item3);
+                //CheckIfBetter(result_jump_up.Item1 + AIJumpPenalization, AIMoves.JumpUpwards);
+                CheckIfBetter(result_jump_back.Item1 + AIJumpPenalization, AIMoves.JumpBackwards, result_jump_back.Item3);
             }
         } else {
             // there was no ground found, this is an edge
             DebugSquare(pos, Color.red);
-            return (best, AIMoves.Stop);
+            (float, AIMoves, List<Vector2>) result = ExploreJump(pos, jumpAmount, (is_right ? 1 : -1), depth + 1, max_depth);
+            CheckIfBetter(result.Item1, AIMoves.JumpSideways, result.Item3);
         }
+
+        List<Vector2> final_path = new List<Vector2>();
+        final_path.Add(pos);
+        final_path.AddRange(path);
+        return (best, move, final_path);
     }
 
-    protected (float, AIMoves) ExploreWall(Vector2 pos, bool is_right, int depth, int max_depth, int wall_depth)
+    protected (float, AIMoves, List<Vector2>) ExploreWall(Vector2 pos, bool is_right, int depth, int max_depth, int wall_depth)
     {
+        debug_AINodeCount += 1;
         float dist = Vector2.Distance(pos, AIDestination);
-        if (depth > max_depth) return (dist, AIMoves.Stop);
+        float best = Mathf.Min(dist);
+        AIMoves move = AIMoves.Stop;
+        List<Vector2> path = new List<Vector2>();
+
+        if (depth > max_depth) return (dist, AIMoves.Stop, path);
+        if (HaveWeDoneBetter(pos, AISearchStates.Wall, depth)) return (float.MaxValue, AIMoves.Stop, path);
+        MarkVisited(pos, AISearchStates.Wall, depth);
         float max_jump_height = - jumpAmount * jumpAmount / (2 * gravitationalAcceleration.y);
         float dy = cl.bounds.size.y;
         float dx = (is_right ? 1f : -1f) * cl.bounds.size.x;
         int max_wall_depth = Mathf.RoundToInt(max_jump_height / dy); 
-        if (wall_depth > max_wall_depth) return (dist, AIMoves.Stop);
+        if (wall_depth > max_wall_depth) return (dist, AIMoves.Stop, path);
         
-        float best = Mathf.Min(dist);
+        void CheckIfBetter(float score, AIMoves action, List<Vector2> trace)
+        {
+            if (score < best) {
+                best = score;
+                move = action;
+                path = trace;
+            }
+        }
+
         RaycastHit2D lateral = Physics2D.Raycast(pos, new Vector2(dx, 0f), Mathf.Abs(dx), AITerrainMask);
         if (lateral) {
             // the wall is still there
@@ -322,23 +451,105 @@ public class DynamicCharacter : Character
             if (up) {
                 // there is a ceiling
                 DebugDiamond(pos, Color.red);
-                return (dist, AIMoves.Stop);
+                ;
             } else {
                 // the wall continues up
-                (float, AIMoves) result = ExploreWall(pos + new Vector2(0f, dy), is_right, depth + 1, max_depth, wall_depth + 1);
+                (float, AIMoves, List<Vector2>) result = ExploreWall(pos + new Vector2(0f, dy), is_right, depth + 1, max_depth, wall_depth + 1);
                 DebugDiamond(pos, Color.magenta);
-                best = Mathf.Min(best, result.Item1);
-                return (best, AIMoves.LateralUp);
+                CheckIfBetter(result.Item1, AIMoves.LateralUp, result.Item3);
             }
         } else {
             // the wall is gone, implies ground
-            (float, AIMoves) result = ExploreLateral(pos + new Vector2(dx, 0f), is_right, depth + 1, max_depth);
+            (float, AIMoves, List<Vector2>) result = ExploreLateral(pos + new Vector2(dx, 0f), is_right, depth + 1, max_depth);
             DebugDiamond(pos, Color.green);
-            best = Mathf.Min(best, result.Item1);
-            return (best, AIMoves.Lateral);
+            CheckIfBetter(result.Item1, AIMoves.Lateral, result.Item3);
         }
+
+        List<Vector2> final_path = new List<Vector2>();
+        final_path.Add(pos);
+        final_path.AddRange(path);
+        return (best, move, final_path);
     }
+
     
+    protected (float, AIMoves, List<Vector2>) ExploreJump(Vector2 pos, float expected_vert_vel, int direction_sign, int depth, int max_depth)
+    {
+        debug_AINodeCount += 1;
+
+        float best = ScoreHeuristic(Vector2.Distance(pos, AIDestination), depth);
+        AIMoves move = AIMoves.Stop;
+        List<Vector2> path = new List<Vector2>();
+        
+        if (depth > max_depth) return (best, AIMoves.Stop, path);
+        if (HaveWeDoneBetter(pos, AISearchStates.Jump, depth)) return (float.MaxValue, move, path);
+        MarkVisited(pos, AISearchStates.Jump, depth);
+        
+        void CheckIfBetter(float score, AIMoves action, List<Vector2> trace)
+        {
+            if (score < best) {
+                best = score;
+                move = action;
+                path = trace;
+            }
+        }
+
+        float timestep = 0.2f;
+        Vector2 lateral_move = direction_sign * Vector2.right;
+        float gravity = gravitationalAcceleration.y;
+        Vector2 next_approx_pos = pos +
+                                  Ultramath.TrajectoryPos(expected_vert_vel, gravity , timestep) * Vector2.up + 
+                                  moveSpeed * lateral_move * timestep;
+        float next_approx_vel = Ultramath.TrajectoryVel(expected_vert_vel, gravity, timestep);
+        Vector2 displacement = next_approx_pos - pos;
+        RaycastHit2D jump = Physics2D.Raycast(pos, displacement, displacement.magnitude, AITerrainMask);
+        RaycastHit2D jump_left = Physics2D.Raycast(pos + new Vector2(-cl.bounds.extents.x, 0), displacement, displacement.magnitude, AITerrainMask);
+        RaycastHit2D jump_right = Physics2D.Raycast(pos + new Vector2(cl.bounds.extents.x, 0), displacement, displacement.magnitude, AITerrainMask);
+        if (jump || jump_left || jump_right) {
+            DebugDiamond(jump.point, new Color(1, 0.5f, 0.5f));
+            // we hit something
+            bool can_stand_on = true;
+            if (jump) {
+                can_stand_on = can_stand_on && Mathf.Abs(Vector2.Angle(jump.normal, Vector2.up)) <= steepestSlopeDegrees;
+                best = Mathf.Min(best, ScoreHeuristic(Ultramath.DistanceToLineSegment(AIDestination, pos, jump.point), depth));
+            }
+            if (jump_left) {
+                can_stand_on = can_stand_on && Mathf.Abs(Vector2.Angle(jump_left.normal, Vector2.up)) <= steepestSlopeDegrees;
+                best = Mathf.Min(best, ScoreHeuristic(Ultramath.DistanceToLineSegment(AIDestination, pos, jump_left.point), depth));
+            }
+            if (jump_right) {
+                can_stand_on = can_stand_on && Mathf.Abs(Vector2.Angle(jump_right.normal, Vector2.up)) <= steepestSlopeDegrees;
+                best = Mathf.Min(best, ScoreHeuristic(Ultramath.DistanceToLineSegment(AIDestination, pos, jump_right.point), depth));
+            }
+            if (can_stand_on)
+            {
+                // we can stand on it
+                debug_AILandFromJumpCount += 1;
+                (float, AIMoves, List<Vector2>) result_l = ExploreLateral(jump.point + jump.normal, false, depth + 1, max_depth);
+                (float, AIMoves, List<Vector2>) result_r = ExploreLateral(jump.point + jump.normal, true, depth + 1, max_depth);
+                CheckIfBetter(result_l.Item1, AIMoves.Lateral, result_l.Item3);
+                CheckIfBetter(result_r.Item1, AIMoves.Lateral, result_r.Item3);
+            } else {
+                // we cannot stand on it
+                ;
+            }
+        } else {
+            // next jump step
+            DebugDiamond(next_approx_pos, Color.red);
+            Debug.DrawLine(pos, next_approx_pos, Color.red);
+            (float, AIMoves, List<Vector2>) result = ExploreJump(next_approx_pos, next_approx_vel, direction_sign, depth + 1, max_depth);
+            if (direction_sign == 0) {
+                CheckIfBetter(result.Item1, AIMoves.JumpUpwards, result.Item3);
+            } else {
+                CheckIfBetter(result.Item1, AIMoves.JumpSideways, result.Item3);
+            }
+        }
+        
+        List<Vector2> final_path = new List<Vector2>();
+        final_path.Add(pos);
+        final_path.AddRange(path);
+        return (best, move, final_path);
+    }
+
     protected void DebugSquare(Vector3 pos, Color color)
     {
         Vector3 width = new Vector3(0.1f, 0f, 0f);
