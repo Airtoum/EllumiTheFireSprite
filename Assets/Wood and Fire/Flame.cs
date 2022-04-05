@@ -13,14 +13,14 @@ public class Flame : Substance
 
     private void OnCollisionEnter2D(Collision2D other) 
     {
-        if (other.gameObject.GetComponent<Substance>() != null && other.gameObject.layer == 7)
+        if (other.gameObject.GetComponent<Substance>() != null)
         { 
             Substance triggerSubstance = other.gameObject.GetComponent<Substance>();
-            SubstanceInteract(triggerSubstance);
-        }
-        else
-        {
-            Physics2D.IgnoreCollision(other.collider, other.otherCollider);
+            if (triggerSubstance.GetSubstanceType() != "Flame")
+            { 
+                SubstanceInteract(triggerSubstance);
+                Destroy(this.gameObject);
+            }
         }
     }
 

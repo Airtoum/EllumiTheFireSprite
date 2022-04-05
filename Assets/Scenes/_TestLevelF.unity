@@ -11850,6 +11850,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1872607849078542695, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.06186609
+      objectReference: {fileID: 0}
+    - target: {fileID: 1872607849078542695, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -5.620154
+      objectReference: {fileID: 0}
+    - target: {fileID: 1872607849078542695, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.00033569295
+      objectReference: {fileID: 0}
+    - target: {fileID: 5155614116163283364, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
+      propertyPath: m_BodyType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5155614116163283364, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
+      propertyPath: m_UseFullKinematicContacts
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5155614116163283365, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
       propertyPath: windSpawn
       value: 
@@ -11908,6 +11928,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5155614116163283370, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5562847558203475646, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
+      propertyPath: airSprite
+      value: 
+      objectReference: {fileID: 1601784856}
+    - target: {fileID: 5690593624156100411, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5690593624156100411, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5690593624156100411, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
+      propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
