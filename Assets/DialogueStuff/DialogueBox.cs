@@ -150,6 +150,7 @@ public class DialogueBox : MonoBehaviour
     void EndDialogue()
     {
         triggered = false;
+        still_typing = false;
         pages.Clear();
         StopAllCoroutines();
         GameEvents.InvokeEndDialogue();
