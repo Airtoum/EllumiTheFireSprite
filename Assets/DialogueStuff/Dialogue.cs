@@ -18,7 +18,7 @@ public struct page
     [Tooltip("Use vertical bars \"|\" for pauses")]
     public string text;
     public string speaker;
-    [ColorUsage(false)]
+    [ColorUsage(true)]
     public Color speakerColor;
     //public bool hasOptions;
     public option[] options;

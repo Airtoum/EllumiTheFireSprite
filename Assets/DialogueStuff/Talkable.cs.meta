@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 79e9fec51620fa541ad75923fb67358d
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - TalkNotifierGameObject: {fileID: 3933094443074321682, guid: 1052b9c9aa14e994b8fbfa96153803ca, type: 3}
+  - optionalCharacter: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
