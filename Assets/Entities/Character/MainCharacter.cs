@@ -17,6 +17,7 @@ public class MainCharacter : DynamicCharacter
     public controlModes controlMode;
     public bool readyToMove = false;
     public bool isInCutscene = false;
+    private bool cancelAfterDialogueJump = false;
 
     protected void Awake()
     {
@@ -40,6 +41,9 @@ public class MainCharacter : DynamicCharacter
     // Update is called once per frame
     protected new void FixedUpdate()
     {
+        if (cancelAfterDialogueJump) {
+            if (Input.GetAxis("Jump") <= 0) cancelAfterDialogueJump = false;
+        }
         if (!isInCutscene && (controlMode == controlModes.PlayerControl || controlMode == controlModes.BottomHalf)) {
             inputFlags = 0;
             // C# can't convert ints to bools or bools to ints
@@ -47,7 +51,7 @@ public class MainCharacter : DynamicCharacter
             inputFlags |= (Input.GetAxis("Right")>0) ? INPUT_RIGHT : 0;
             inputFlags |= (Input.GetAxis("Down")>0) ? INPUT_DOWN : 0;
             inputFlags |= (Input.GetAxis("Up")>0) ? INPUT_UP : 0;
-            inputFlags |= (Input.GetAxis("Jump")>0) ? INPUT_JUMP : 0;
+            inputFlags |= (Input.GetAxis("Jump")>0 && !cancelAfterDialogueJump) ? INPUT_JUMP : 0;
             inputFlags |= (Input.GetAxis("Fire1")>0) ? INPUT_SPECIAL : 0;
         }
         base.FixedUpdate();
@@ -120,6 +124,7 @@ public class MainCharacter : DynamicCharacter
     public void OnEndDialogue(object sender, EventArgs args)
     {
         this.isInCutscene = false;
+        cancelAfterDialogueJump = true;
     }
 
     public bool CanDoAbility()
