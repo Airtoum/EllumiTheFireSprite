@@ -620,7 +620,7 @@ GameObject:
   - component: {fileID: 4115434783252314966}
   - component: {fileID: 4115434783252314967}
   - component: {fileID: 4115434783252314964}
-  m_Layer: 6
+  m_Layer: 9
   m_Name: Ellumi
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -708,6 +708,13 @@ MonoBehaviour:
   AIDestination: {x: 0, y: 0}
   AICloseEnoughDistance: 0.4
   AICliffDropDistance: 6
+  AICliffDownwarpDistance: 0.5
+  AIMaxDepth: 0
+  AIJumpTimestep: 0.2
+  debug_text: {fileID: 0}
+  AIJumpPenalization: 0.4
+  AIGridFineness: 0.4
+  AIDepthPenalty: 0.2
   facingLeft: 0
   controlMode: 0
   readyToMove: 0
@@ -924,7 +931,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   componentAnimator: {fileID: 0}
-  mainEllumi: {fileID: 0}
+  mainRigidBody: {fileID: 0}
+  ellumiScript: {fileID: 0}
 --- !u!1 &5371049370700308721
 GameObject:
   m_ObjectHideFlags: 0
