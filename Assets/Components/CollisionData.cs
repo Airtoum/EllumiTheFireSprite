@@ -47,6 +47,7 @@ public class CollisionData : MonoBehaviour
     {
         if (collisions.Any()) {
             foreach (Collision2D coll in collisions) {
+                if (Physics2D.GetIgnoreLayerCollision(gameObject.layer, coll.gameObject.layer)) continue;
                 for (int i = 0; i < coll.contactCount; i++) {
                     ContactPoint2D contact = coll.GetContact(i);
                     function(coll, contact);

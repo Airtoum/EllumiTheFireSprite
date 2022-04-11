@@ -115,6 +115,7 @@ public class DynamicCharacter : Character
         if (onGround && jumpCooldownTimer > jumpCooldown) {
             coyoteTimeTimer = 0;
         }
+        debug_text.text = onGround.ToString();
         if ((onGround || coyoteTimeTimer <= coyoteTime) && (inputFlags & INPUT_JUMP) > 0 && jumpCooldownTimer > jumpCooldown) {
             //vertical_movement += jumpAmount;
             vertical_movement = jumpAmount + lastPlatformVelocity.y;
@@ -123,6 +124,7 @@ public class DynamicCharacter : Character
             coyoteTimeTimer = coyoteTime + 1;
             onGround = false;
             jumpCooldownTimer = 0;
+            print("jump");
         }
 
         if (!onGround && Mathf.Abs(horizontal_movement) > Mathf.Abs(target_horizontal_movement) &&
@@ -157,11 +159,15 @@ public class DynamicCharacter : Character
     protected new void EvaluateCollision(Collision2D coll, ContactPoint2D contact)
     {
         if (Mathf.Abs(Vector2.Angle(contact.normal, Vector2.up)) <= steepestSlopeDegrees) {
-            onGround = true;
-            if (contact.rigidbody) {
-                lastPlatformVelocity = contact.rigidbody.velocity;
-            } else {
-                lastPlatformVelocity = Vector2.zero;
+            // check to make sure it's near his feet
+            if (Mathf.Abs(transform.position.x - contact.point.x) < 0.9f * cl.bounds.size.x &&
+                 contact.point.y < cl.bounds.center.y - 0.29f * cl.bounds.size.y) {
+                onGround = true;
+                if (contact.rigidbody) {
+                    lastPlatformVelocity = contact.rigidbody.velocity;
+                } else {
+                    lastPlatformVelocity = Vector2.zero;
+                }
             }
         }
     }

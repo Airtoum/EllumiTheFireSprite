@@ -75,7 +75,13 @@ public class FireSprite : MainCharacter
             float distance_scaling = 1 / (wallPushFalloff * ray_hit.distance + 1);
             Vector2 pushVelocity = -direction.normalized * angle_scaling * wallPushFalloff * wallPushStrength;
             // no double jumps
-            if (!onGround) pushVelocity.y = 0;
+            if (!onGround || jumpCooldownTimer <= jumpCooldown) pushVelocity.y = 0;
+            if (pushVelocity.y > 0) {
+                onGround = false;
+                coyoteTimeTimer = coyoteTime + 1;
+                jumpCooldownTimer = 0;
+                print("firejump");
+            }
             AddVelocity(pushVelocity);
             firstPush = false;
         }
