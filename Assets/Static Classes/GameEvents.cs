@@ -24,6 +24,12 @@ public class DialogueArgs : EventArgs
     public Dialogue dialogue;
 }
 
+public class TalkableArgs : EventArgs
+{
+    public Vector2 pos;
+    public Talkable person;
+}
+
 public class GameEvents
 {
     public static EventHandler<Vector3Args> OnPrimaryAbilityDown;
@@ -39,6 +45,10 @@ public class GameEvents
 
     public static EventHandler<DialogueArgs> StartDialogue;
     public static EventHandler EndDialogue;
+
+    public static EventHandler<Vector3Args> ScanForTalkable;
+    public static EventHandler<TalkableArgs> BroadcastTalkable;
+    public static EventHandler<TalkableArgs> ATalkableHasBeenChosen;
 
     public static void InvokePrimaryAbilityDown(Vector3 position)
     {
@@ -90,5 +100,23 @@ public class GameEvents
     {
         if (EndDialogue == null) return;
         EndDialogue(null, EventArgs.Empty);
+    }
+
+    public static void InvokeScanForTalkable(Vector3 position)
+    {
+        if (ScanForTalkable == null) return;
+        ScanForTalkable(null, new Vector3Args {pos = position});
+    }
+    
+    public static void InvokeBroadcastTalkable(Vector2 position, Talkable talkable)
+    {
+        if (BroadcastTalkable == null) return;
+        BroadcastTalkable(null, new TalkableArgs {pos = position, person = talkable});
+    }
+
+    public static void InvokeATalkableHasBeenChosen(Talkable talkable)
+    {
+        if (ATalkableHasBeenChosen == null) return;
+        ATalkableHasBeenChosen(null, new TalkableArgs {pos = Vector2.zero, person = talkable});
     }
 }

@@ -20,19 +20,34 @@ public class Talkable : MonoBehaviour
     {
         GameEvents.StartDialogue += OnStartDialogue;
         GameEvents.EndDialogue += OnEndDialogue;
+        GameEvents.ScanForTalkable += OnScanForTalkable;
+        GameEvents.ATalkableHasBeenChosen += OnATalkableHasBeenChosen;
         conversationIndex = Mathf.Clamp(conversationIndex, 0, Conversations.Count - 1);
     }
 
     // Update is called once per frame
     void Update()
     {
+
+    }
+
+    private void OnATalkableHasBeenChosen(object sender, TalkableArgs args)
+    {
         bool talk_to = false;
         if (!isAlreadyTalking) {
+            /*
             // detect if player is in range
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, radius);
             foreach (Collider2D coll in colliders) {
-                talk_to = talk_to || coll.CompareTag("Player");
-            }
+                if (!coll.CompareTag("Player")) continue;
+                PlayerTalkCheck playerTalkCheck = coll.gameObject.GetComponent<PlayerTalkCheck>();
+                if (playerTalkCheck) {
+                    if (playerTalkCheck.IsTopPriority(this, priority)) {
+                        talk_to = true;
+                    }
+                }
+            }*/
+            talk_to = args.person == this;
         }
 
         if (talk_to) {
@@ -40,8 +55,10 @@ public class Talkable : MonoBehaviour
             if (myTalkNotifier) {
                 ;
             } else {
-                myTalkNotifier = Instantiate(TalkNotifierGameObject, transform.position, Quaternion.identity).GetComponent<TalkNotifier>();
+                myTalkNotifier = Instantiate(TalkNotifierGameObject, transform.position, Quaternion.identity)
+                    .GetComponent<TalkNotifier>();
             }
+
             // start dialogue when player presses e
             if (Input.GetKeyDown(KeyCode.E)) {
                 TriggerDialogue();
@@ -52,6 +69,13 @@ public class Talkable : MonoBehaviour
                 myTalkNotifier.GoAway();
             }
         }
+    }
+
+    private bool IsInRange(Vector3 point)
+    {
+        Vector2 point_flat = point;
+        Vector2 pos_flat = transform.position;
+        return Vector2.Distance(point_flat, pos_flat) <= radius;
     }
     
     public void TriggerDialogue()
@@ -70,5 +94,10 @@ public class Talkable : MonoBehaviour
     private void OnEndDialogue(object sender, EventArgs args)
     {
         isAlreadyTalking = false;
+    }
+
+    private void OnScanForTalkable(object sender, Vector3Args args)
+    {
+        if (IsInRange(args.pos)) GameEvents.InvokeBroadcastTalkable(transform.position, this);
     }
 }
