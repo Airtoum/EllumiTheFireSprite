@@ -13,6 +13,8 @@ public class FollowCharacter : MonoBehaviour
     [SerializeField] public float scrollSpeed = 10f;
     [SerializeField] public float zoomSpeed = 10f;
 
+    [SerializeField] public float farAwayScale = 0.2f;
+
     private Camera cam;
     
     // Start is called before the first frame update
@@ -23,7 +25,7 @@ public class FollowCharacter : MonoBehaviour
     }
 
     // Update is called once per frame
-    void LateUpdate()
+    void FixedUpdate()
     {
         // thank you https://answers.unity.com/questions/230190/how-to-get-the-width-and-height-of-a-orthographic.html
         float camera_vertical_extent = cam.orthographicSize;
@@ -49,11 +51,11 @@ public class FollowCharacter : MonoBehaviour
         
         //transform.position = Vector3.MoveTowards(pos, target_pos, scrollSpeed * Time.deltaTime);
         Vector3 diff = (target_pos - pos);
-        if (diff.magnitude <= scrollSpeed * Time.deltaTime) {
+        if (diff.magnitude <= scrollSpeed * Time.fixedDeltaTime) {
             transform.position = target_pos;
             //print("reached!");
         } else {
-            transform.position += diff.normalized * scrollSpeed * Time.deltaTime;
+            transform.position += diff.normalized * scrollSpeed * Time.deltaTime * (diff.magnitude * farAwayScale + 1);
             //print("chasing!");
         }
         cam.orthographicSize += Mathf.Clamp(zoom - camera_vertical_extent, -zoomSpeed * Time.deltaTime, zoomSpeed * Time.deltaTime);
