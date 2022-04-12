@@ -69,7 +69,6 @@ public class DynamicCharacter : Character
     private int debug_WallNodes = 0;
     private int debug_JumpNodes = 0;
     [SerializeField] public float AIJumpTimestep = 0.2f;
-    [SerializeField] private TextMeshProUGUI debug_text;
     [SerializeField] public float AIJumpPenalization = 0.4f;
     private Dictionary<(Vector2, AISearchStates), int> AIVisited = new Dictionary<(Vector2, AISearchStates), int>();
     [SerializeField] public float AIGridFineness = 0.4f;
@@ -115,7 +114,6 @@ public class DynamicCharacter : Character
         if (onGround && jumpCooldownTimer > jumpCooldown) {
             coyoteTimeTimer = 0;
         }
-        debug_text.text = onGround.ToString();
         if ((onGround || coyoteTimeTimer <= coyoteTime) && (inputFlags & INPUT_JUMP) > 0 && jumpCooldownTimer > jumpCooldown) {
             //vertical_movement += jumpAmount;
             vertical_movement = jumpAmount + lastPlatformVelocity.y;
@@ -330,7 +328,7 @@ public class DynamicCharacter : Character
             inputFlags = 0;
         }
         
-        debug_text.text = "Node count " + debug_AINodeCount + "\n" +
+        /*debug_text.text = "Node count " + debug_AINodeCount + "\n" +
                           "Landings from jump " + debug_AILandFromJumpCount + "\n" +
                           "Dictionary size " + AIVisited.Count + "\n" +
                           "Input " + inputFlags + "\n" +
@@ -338,7 +336,7 @@ public class DynamicCharacter : Character
                           "Walk Nodes " + debug_WalkNodes + "\n" +
                           "Wall Nodes " + debug_WallNodes + "\n" +
                           "Jump Nodes " + debug_JumpNodes + "\n" +
-                          "Best Score " + best_score;
+                          "Best Score " + best_score;*/
     }
 
     // we don't want a long path, so lower depth is better
