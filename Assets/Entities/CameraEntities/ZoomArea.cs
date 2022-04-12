@@ -31,7 +31,7 @@ public class ZoomArea : CameraConstraint
 
     public void OnDrawGizmos()
     {
-        Gizmos.color = Color.yellow;
+        Gizmos.color = new Color(1.0f, 0.6f, 0.6f);
         Gizmos.DrawWireCube(transform.position, size);
     }
 }
