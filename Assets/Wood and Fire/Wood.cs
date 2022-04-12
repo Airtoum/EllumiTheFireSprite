@@ -6,8 +6,8 @@ public class Wood : Substance
 {
     [SerializeField] GameObject emberGenerator;
     [SerializeField] Material spriteRegular;
-
     [SerializeField] Material burnShader;
+    [SerializeField] Material instanceBurnShader;
 
     float amountDisappeared = 1f;
 
@@ -28,7 +28,7 @@ public class Wood : Substance
                 amountDisappeared = 0f;
                 isBurning = false;
             }
-            burnShader.SetFloat("_Fade", amountDisappeared);
+            instanceBurnShader.SetFloat("_Fade", amountDisappeared);
         }
     }
 
@@ -37,6 +37,7 @@ public class Wood : Substance
         type = "Wood";
         this.gameObject.GetComponent<SpriteRenderer>().color = Color.white;
         emberGenerator.SetActive(false);
+        instanceBurnShader = Material.Instantiate(burnShader);
     }
     
     private void OnCollisionEnter2D(Collision2D other) 
@@ -63,7 +64,7 @@ public class Wood : Substance
         if (triggerSubstance.GetSubstanceType() == "Flame")
         {
             emberGenerator.SetActive(true);
-            GetComponent<SpriteRenderer>().material = burnShader;
+            GetComponent<SpriteRenderer>().material = instanceBurnShader;
             isBurning = true;
             this.gameObject.GetComponent<SpriteRenderer>().color = Color.yellow;
             Destroy(this.gameObject, 3);

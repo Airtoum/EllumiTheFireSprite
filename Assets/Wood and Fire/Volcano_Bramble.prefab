@@ -11,7 +11,8 @@ GameObject:
   - component: {fileID: 7268205784163634693}
   - component: {fileID: 7268205784163634699}
   - component: {fileID: 7268205784163634698}
-  m_Layer: 0
+  - component: {fileID: 1770064082803190461}
+  m_Layer: 7
   m_Name: BurningSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1361,7 +1362,7 @@ ParticleSystem:
         m_NumAlphaKeys: 2
   UVModule:
     serializedVersion: 2
-    enabled: 1
+    enabled: 0
     mode: 0
     timeMode: 1
     fps: 30
@@ -3610,10 +3611,10 @@ ParticleSystem:
         m_NumAlphaKeys: 2
     range: {x: 0, y: 1}
   CollisionModule:
-    enabled: 0
+    enabled: 1
     serializedVersion: 4
-    type: 0
-    collisionMode: 0
+    type: 1
+    collisionMode: 1
     colliderForce: 0
     multiplyColliderForceByParticleSize: 0
     multiplyColliderForceByParticleSpeed: 0
@@ -3783,11 +3784,11 @@ ParticleSystem:
     radiusScale: 1
     collidesWith:
       serializedVersion: 2
-      m_Bits: 4294967295
+      m_Bits: 3959
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
-    collisionMessages: 0
+    collisionMessages: 1
     collidesWithDynamic: 1
     interiorCollisions: 0
   TriggerModule:
@@ -4780,7 +4781,7 @@ ParticleSystemRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 3
   m_RenderMode: 0
-  m_SortMode: 3
+  m_SortMode: 0
   m_MinParticleSize: 0.02
   m_MaxParticleSize: 0.5
   m_CameraVelocityScale: 0
@@ -4804,6 +4805,19 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &1770064082803190461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7268205784163634692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfedfb411fbdee3409ba486a2bfcf762, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 
 --- !u!1 &7268205784235764747
 GameObject:
   m_ObjectHideFlags: 0
@@ -4816,7 +4830,7 @@ GameObject:
   - component: {fileID: 7268205784235764744}
   - component: {fileID: 7268205784235764750}
   - component: {fileID: 7268205784235764751}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Volcano_Bramble
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4905,6 +4919,7 @@ MonoBehaviour:
   emberGenerator: {fileID: 7268205784163634692}
   spriteRegular: {fileID: 0}
   burnShader: {fileID: 2100000, guid: 7940a283338296b40a5c0e426daec0ee, type: 2}
+  instanceBurnShader: {fileID: 0}
 --- !u!61 &7268205784235764751
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Flame : Substance 
 {
-    [SerializeField] GameObject player;
-
     private void Awake() 
     {
         type = "Flame";
@@ -19,9 +17,9 @@ public class Flame : Substance
             if (triggerSubstance.GetSubstanceType() != "Flame")
             { 
                 SubstanceInteract(triggerSubstance);
-                Destroy(this.gameObject);
             }
         }
+        Destroy(this.gameObject, 0.05f);
     }
 
     public override void SubstanceInteract(Substance triggerSubstance)
