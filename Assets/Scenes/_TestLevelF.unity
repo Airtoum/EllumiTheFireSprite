@@ -10926,6 +10926,7 @@ MonoBehaviour:
   zoom: 1
   scrollSpeed: 10
   zoomSpeed: 10
+  farAwayScale: 0.2
 --- !u!114 &982404165
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11850,41 +11851,9 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1872607849078542695, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.06186609
-      objectReference: {fileID: 0}
-    - target: {fileID: 1872607849078542695, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -5.620154
-      objectReference: {fileID: 0}
-    - target: {fileID: 1872607849078542695, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.00033569295
-      objectReference: {fileID: 0}
-    - target: {fileID: 5155614116163283364, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
-      propertyPath: m_BodyType
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5155614116163283364, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
-      propertyPath: m_UseFullKinematicContacts
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5155614116163283365, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
-      propertyPath: windSpawn
-      value: 
-      objectReference: {fileID: 2348945602394527889, guid: 6ec74dc059d19694ea16b64be6e29c94, type: 3}
-    - target: {fileID: 5155614116163283365, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
-      propertyPath: controlMode
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5155614116163283368, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
       propertyPath: m_Name
       value: AirSprite
-      objectReference: {fileID: 0}
-    - target: {fileID: 5155614116163283368, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5155614116163283370, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
       propertyPath: m_RootOrder
@@ -11928,22 +11897,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5155614116163283370, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5562847558203475646, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
-      propertyPath: airSprite
-      value: 
-      objectReference: {fileID: 1601784856}
-    - target: {fileID: 5690593624156100411, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5690593624156100411, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5690593624156100411, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
-      propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
