@@ -3074,10 +3074,6 @@ PrefabInstance:
       propertyPath: readyToMove
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 5155614116163283365, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
-      propertyPath: AICloseEnoughDistance
-      value: 0.8
-      objectReference: {fileID: 0}
     - target: {fileID: 5155614116163283368, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
       propertyPath: m_Name
       value: AirSprite

@@ -112,7 +112,7 @@ MonoBehaviour:
   AILookDistance: 0
   AIActivated: 0
   AIDestination: {x: 0, y: 0}
-  AICloseEnoughDistance: 0
+  AICloseEnoughDistance: 0.8
   AICliffDropDistance: 6
   AICliffDownwarpDistance: 0.5
   AIMaxDepth: 0
