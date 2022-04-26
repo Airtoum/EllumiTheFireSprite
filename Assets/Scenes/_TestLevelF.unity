@@ -10328,6 +10328,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 7268205784235764747, guid: cb75fcf977ad34146b792320b45c3735, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cb75fcf977ad34146b792320b45c3735, type: 3}
 --- !u!1 &379447526
@@ -11711,11 +11715,11 @@ PrefabInstance:
       objectReference: {fileID: 3999331025085245803, guid: 8e1775f74b8e114439c2cf865f5147de, type: 3}
     - target: {fileID: 4115434783252314967, guid: ae8006234f331a94284bf6284c776fac, type: 3}
       propertyPath: controlMode
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4115434783252314967, guid: ae8006234f331a94284bf6284c776fac, type: 3}
       propertyPath: readyToMove
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4115434783252314967, guid: ae8006234f331a94284bf6284c776fac, type: 3}
       propertyPath: isInCutscene
@@ -11855,6 +11859,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: AirSprite
       objectReference: {fileID: 0}
+    - target: {fileID: 5155614116163283368, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5155614116163283370, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -11958,7 +11966,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6337813183306584662, guid: 4326028acbab32f40bad9ba604471920, type: 3}
       propertyPath: CurrentMouseMode
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6337813183306584662, guid: 4326028acbab32f40bad9ba604471920, type: 3}
       propertyPath: currentCharacter
@@ -12031,7 +12039,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7607788351426595878, guid: c443308da6fc2b74ab816cf97d11a2ee, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c443308da6fc2b74ab816cf97d11a2ee, type: 3}
