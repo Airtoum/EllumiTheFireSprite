@@ -8,9 +8,16 @@ public class Ellumi_AnimationController : MonoBehaviour
     [SerializeField] Rigidbody2D mainRigidBody;
 
     [SerializeField] FireSprite ellumiScript;
+    [SerializeField] GameObject jumpParticle;
+    [SerializeField] GameObject jumpParticleSpawnPoint;
+    [SerializeField] AnimationClip jumpParticleAnim;
 
     private float xScale;
     private Vector3 fullScale;
+
+    private Vector3 jumpFullScale;
+
+    private bool jumpStarted = false;
 
     private void Awake() 
     {
@@ -18,7 +25,8 @@ public class Ellumi_AnimationController : MonoBehaviour
         mainRigidBody = this.transform.parent.gameObject.GetComponent<Rigidbody2D>();
         ellumiScript = this.transform.parent.gameObject.GetComponent<FireSprite>();
         fullScale = this.transform.parent.transform.localScale;
-        xScale = fullScale.x;
+        xScale = fullScale.x; 
+        jumpFullScale = jumpParticle.transform.localScale;
     }
 
     private void Start() 
@@ -31,6 +39,7 @@ public class Ellumi_AnimationController : MonoBehaviour
     {
         UpdateAnimationState();
         FlipCheck();
+        jumpParticleSpawn();
     }
 
     void UpdateAnimationState()
@@ -44,10 +53,20 @@ public class Ellumi_AnimationController : MonoBehaviour
         if(ellumiScript.GetOnGround())
         {
             componentAnimator.SetBool("IsJumping", false);
+            jumpStarted = false;
         }
         else
         {
             componentAnimator.SetBool("IsJumping", true);
+        }
+    }
+
+    void jumpParticleSpawn()
+    {
+        if (jumpStarted == false && componentAnimator.GetBool("IsJumping"))
+        {
+            Instantiate(jumpParticle, jumpParticleSpawnPoint.transform.position, Quaternion.identity);
+            jumpStarted = true;
         }
     }
 
@@ -56,10 +75,12 @@ public class Ellumi_AnimationController : MonoBehaviour
         if (ellumiScript.facingLeft)
         {
             this.transform.parent.transform.localScale = new Vector3(-1 * xScale, this.transform.parent.transform.localScale.y, this.transform.parent.transform.localScale.z);
+            jumpParticle.transform.localScale = new Vector3(-1 * jumpParticle.transform.localScale.x, jumpParticle.transform.localScale.y, jumpParticle.transform.localScale.z);
         }
         else
         {
             this.transform.parent.transform.localScale = fullScale;
+            jumpParticle.transform.localScale = jumpFullScale;
         }
     }
 }

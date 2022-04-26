@@ -123,6 +123,36 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &46892737
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 46892738}
+  m_Layer: 0
+  m_Name: JumpParticleSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &46892738
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 46892737}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.39, y: 4.57, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 975294944}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &85622661
 GameObject:
   m_ObjectHideFlags: 0
@@ -586,6 +616,75 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
+--- !u!1001 &514899240
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4421292274621861070, guid: 4a7c5669c51c3954faccf1fe4d63abdc, type: 3}
+      propertyPath: m_RootOrder
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 4421292274621861070, guid: 4a7c5669c51c3954faccf1fe4d63abdc, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.07105609
+      objectReference: {fileID: 0}
+    - target: {fileID: 4421292274621861070, guid: 4a7c5669c51c3954faccf1fe4d63abdc, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.07105609
+      objectReference: {fileID: 0}
+    - target: {fileID: 4421292274621861070, guid: 4a7c5669c51c3954faccf1fe4d63abdc, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.07105609
+      objectReference: {fileID: 0}
+    - target: {fileID: 4421292274621861070, guid: 4a7c5669c51c3954faccf1fe4d63abdc, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -5.8424
+      objectReference: {fileID: 0}
+    - target: {fileID: 4421292274621861070, guid: 4a7c5669c51c3954faccf1fe4d63abdc, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -2.3146
+      objectReference: {fileID: 0}
+    - target: {fileID: 4421292274621861070, guid: 4a7c5669c51c3954faccf1fe4d63abdc, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4421292274621861070, guid: 4a7c5669c51c3954faccf1fe4d63abdc, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4421292274621861070, guid: 4a7c5669c51c3954faccf1fe4d63abdc, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4421292274621861070, guid: 4a7c5669c51c3954faccf1fe4d63abdc, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4421292274621861070, guid: 4a7c5669c51c3954faccf1fe4d63abdc, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4421292274621861070, guid: 4a7c5669c51c3954faccf1fe4d63abdc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4421292274621861070, guid: 4a7c5669c51c3954faccf1fe4d63abdc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4421292274621861070, guid: 4a7c5669c51c3954faccf1fe4d63abdc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4421292274621861075, guid: 4a7c5669c51c3954faccf1fe4d63abdc, type: 3}
+      propertyPath: m_Name
+      value: Jump Particle
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4a7c5669c51c3954faccf1fe4d63abdc, type: 3}
 --- !u!1 &670764266
 GameObject:
   m_ObjectHideFlags: 0
@@ -31250,6 +31349,11 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!4 &975294944 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 157879614436866537, guid: ae8006234f331a94284bf6284c776fac, type: 3}
+  m_PrefabInstance: {fileID: 1582867868}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1020255592
 GameObject:
   m_ObjectHideFlags: 0
@@ -32617,6 +32721,18 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6216214755061232251, guid: ae8006234f331a94284bf6284c776fac, type: 3}
+      propertyPath: jumpParticle
+      value: 
+      objectReference: {fileID: 4421292274621861075, guid: 4a7c5669c51c3954faccf1fe4d63abdc, type: 3}
+    - target: {fileID: 6216214755061232251, guid: ae8006234f331a94284bf6284c776fac, type: 3}
+      propertyPath: jumpParticleAnim
+      value: 
+      objectReference: {fileID: 7400000, guid: 8db28f6f77e03d240a320f190f2dd90c, type: 2}
+    - target: {fileID: 6216214755061232251, guid: ae8006234f331a94284bf6284c776fac, type: 3}
+      propertyPath: jumpParticleSpawnPoint
+      value: 
+      objectReference: {fileID: 46892737}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae8006234f331a94284bf6284c776fac, type: 3}
 --- !u!114 &1582867869 stripped
