@@ -8,9 +8,16 @@ public class Ellumi_AnimationController : MonoBehaviour
     [SerializeField] Rigidbody2D mainRigidBody;
 
     [SerializeField] FireSprite ellumiScript;
-    [SerializeField] GameObject jumpParticle;
+    [SerializeField] GameObject currentJumpParticle;
+    [SerializeField] GameObject jumpParticleRight;
+    [SerializeField] GameObject jumpParticleLeft;
     [SerializeField] GameObject jumpParticleSpawnPoint;
-    [SerializeField] AnimationClip jumpParticleAnim;
+
+    [SerializeField] float minimumJumpHeight;
+
+    Ray2D leftGroundCheck;
+    Ray2D midGroundCheck;
+    Ray2D rightGroundCheck;
 
     private float xScale;
     private Vector3 fullScale;
@@ -19,6 +26,8 @@ public class Ellumi_AnimationController : MonoBehaviour
 
     private bool jumpStarted = false;
 
+    private bool facingLeft = false;
+
     private void Awake() 
     {
         componentAnimator = this.gameObject.GetComponent<Animator>();
@@ -26,7 +35,9 @@ public class Ellumi_AnimationController : MonoBehaviour
         ellumiScript = this.transform.parent.gameObject.GetComponent<FireSprite>();
         fullScale = this.transform.parent.transform.localScale;
         xScale = fullScale.x; 
-        jumpFullScale = jumpParticle.transform.localScale;
+        currentJumpParticle = jumpParticleRight;
+
+        updateRayCasts();
     }
 
     private void Start() 
@@ -38,8 +49,13 @@ public class Ellumi_AnimationController : MonoBehaviour
     void Update()
     {
         UpdateAnimationState();
+        updateRayCasts();
         FlipCheck();
-        jumpParticleSpawn();
+        
+        if(Input.GetAxis("Jump") > 0)
+        {
+            jumpParticleSpawn();
+        }
     }
 
     void UpdateAnimationState()
@@ -50,7 +66,7 @@ public class Ellumi_AnimationController : MonoBehaviour
         componentAnimator.SetFloat("Speed", horizontalVelocity);
         componentAnimator.SetFloat("VertVelocity", verticalVelocity);
 
-        if(ellumiScript.GetOnGround())
+        if(checkGrounded())
         {
             componentAnimator.SetBool("IsJumping", false);
             jumpStarted = false;
@@ -63,24 +79,57 @@ public class Ellumi_AnimationController : MonoBehaviour
 
     void jumpParticleSpawn()
     {
-        if (jumpStarted == false && componentAnimator.GetBool("IsJumping"))
+        if (!checkGrounded() && jumpStarted == false)
         {
-            Instantiate(jumpParticle, jumpParticleSpawnPoint.transform.position, Quaternion.identity);
+            Instantiate(currentJumpParticle, jumpParticleSpawnPoint.transform.position, Quaternion.identity);
             jumpStarted = true;
         }
     }
 
     void FlipCheck()
     {
-        if (ellumiScript.facingLeft)
+        if (Input.GetAxis("Horizontal") < 0 && facingLeft == false)
         {
             this.transform.parent.transform.localScale = new Vector3(-1 * xScale, this.transform.parent.transform.localScale.y, this.transform.parent.transform.localScale.z);
-            jumpParticle.transform.localScale = new Vector3(-1 * jumpParticle.transform.localScale.x, jumpParticle.transform.localScale.y, jumpParticle.transform.localScale.z);
+            facingLeft = true;
+            currentJumpParticle = jumpParticleLeft;
+        }
+        else if (Input.GetAxis("Horizontal") > 0 && facingLeft == true)
+        {
+            this.transform.parent.transform.localScale = fullScale;
+            facingLeft = false;
+            currentJumpParticle = jumpParticleRight;
+        }
+    }
+
+    void updateRayCasts()
+    {
+        leftGroundCheck = new Ray2D(new Vector2((transform.position.x - .5f), transform.position.y), new Vector2(0f, -1));
+        midGroundCheck = new Ray2D(new Vector2(transform.position.x, transform.position.y), new Vector2(0f, -1));
+        rightGroundCheck = new Ray2D(new Vector2((transform.position.x + .5f), transform.position.y), new Vector2(0f, -1));
+
+        Debug.DrawRay(leftGroundCheck.origin, leftGroundCheck.direction, Color.green, Time.deltaTime);
+        Debug.DrawRay(midGroundCheck.origin, midGroundCheck.direction, Color.green, Time.deltaTime);
+        Debug.DrawRay(rightGroundCheck.origin, rightGroundCheck.direction, Color.green, Time.deltaTime);
+    }
+
+    bool checkGrounded()
+    {
+        RaycastHit2D leftHit = Physics2D.Raycast(leftGroundCheck.origin, leftGroundCheck.direction);
+        RaycastHit2D midHit = Physics2D.Raycast(midGroundCheck.origin, midGroundCheck.direction);
+        RaycastHit2D rightHit = Physics2D.Raycast(rightGroundCheck.origin, rightGroundCheck.direction); 
+
+        bool leftClose = leftHit.distance < minimumJumpHeight;
+        bool midClose = midHit.distance < minimumJumpHeight;
+        bool rightClose = rightHit.distance < minimumJumpHeight;
+
+        if ( (leftClose && midClose) || (midClose && rightClose) || (leftClose && rightClose) )
+        {
+            return true;
         }
         else
         {
-            this.transform.parent.transform.localScale = fullScale;
-            jumpParticle.transform.localScale = jumpFullScale;
+            return false;
         }
     }
 }
