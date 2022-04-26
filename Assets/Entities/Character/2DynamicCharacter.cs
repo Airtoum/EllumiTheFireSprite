@@ -8,7 +8,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(CollisionData))]
 
-public class DynamicCharacter : Character
+public class BackupDynamicCharacter : Character
 {
     protected const int INPUT_LEFT = 1 << 0;
     protected const int INPUT_RIGHT = 1 << 1;
@@ -221,14 +221,6 @@ public class DynamicCharacter : Character
         if (best_path.Count > 0) {
             inputFlags = best_path[0].Item2;
         }
-        
-        DebugText.SetText(best_path.Count + "\n" + best_fitness);
-        for (int i = 0; i < best_path.Count; i++) {
-            if (i < best_path.Count - 1) {
-                Debug.DrawLine(best_path[i].Item1, best_path[i+1].Item1, Color.white);
-            }
-            DebugDiamond(best_path[i].Item1, Color.white);
-        }
 
         return (best_fitness, best_path);
     }
@@ -252,8 +244,6 @@ public class DynamicCharacter : Character
     // returns optimal fitness, then approximate list of inputs to get there
     protected (float, List<(Vector2, int)>) ExploreLateral(Vector2 pos, Vector2 vel, bool is_right, int depth, int max_depth)
     {
-        DebugSquare(pos, Color.green);
-        
         float best_fitness = Vector2.Distance(pos, AIDestination);
         List<(Vector2, int)> node_inputs = new List<(Vector2, int)>(); node_inputs.Add((pos, 0));
         List<(Vector2, int)> best_future_path = new List<(Vector2, int)>();
@@ -292,9 +282,9 @@ public class DynamicCharacter : Character
             List<(Vector2, int)> walk_node_inputs = new List<(Vector2, int)>();
             List<(Vector2, int)> jump_node_inputs = new List<(Vector2, int)>(); jump_node_inputs.Add((pos, INPUT_JUMP | input_lr));
             for (int i = 0; i < AIPhysicsSteps; i++) {
-                walk_node_inputs.Add((next_pos, input_lr));
+                node_inputs.Add((next_pos, input_lr));
                 next_vel.x = next_vel.x * (1 - tightness) + (is_right ? moveSpeed : -moveSpeed) * tightness;
-                next_pos += vel * Time.fixedDeltaTime;
+                next_pos += vel;
             }
             
             RaycastHit2D look_right = Physics2D.Raycast(pos, is_right ? Vector2.right : Vector2.left, (next_pos - pos).magnitude, AITerrainMask);
@@ -310,7 +300,7 @@ public class DynamicCharacter : Character
                 for (i = 0; i < AIPhysicsSteps; i++) {
                     wall_node_inputs.Add((next_pos, input_lr));
                     next_vel.x = next_vel.x * (1 - tightness) + (is_right ? moveSpeed : -moveSpeed) * tightness;
-                    next_pos += vel * Time.fixedDeltaTime;
+                    next_pos += vel;
                     if ((next_pos - pos).magnitude >= look_right.distance - collider_width/2f) {
                         break;
                     }
@@ -359,8 +349,6 @@ public class DynamicCharacter : Character
 
     protected (float, List<(Vector2, int)>) ExploreWall(Vector2 pos, Vector2 vel, bool is_right, int depth, int max_depth)
     {
-        DebugSquare(pos, Color.magenta);
-        
         float best_fitness = Vector2.Distance(pos, AIDestination);
         List<(Vector2, int)> node_inputs = new List<(Vector2, int)>(); node_inputs.Add((pos, 0));
         List<(Vector2, int)> best_future_path = new List<(Vector2, int)>();
@@ -390,7 +378,7 @@ public class DynamicCharacter : Character
         for (int i = 0; i < AIPhysicsSteps; i++) {
             walk_node_inputs.Add((next_pos, input_lr));
             next_vel.x = next_vel.x * (1 - tightness) + (is_right ? moveSpeed : -moveSpeed) * tightness;
-            next_pos += vel * Time.fixedDeltaTime;
+            next_pos += vel;
         }
 
         RaycastHit2D look_right = TripleRaycast(pos, Vector2.down * collider_height/2f, is_right ? Vector2.right : Vector2.left, (next_pos - pos).magnitude, AITerrainMask);
@@ -404,7 +392,7 @@ public class DynamicCharacter : Character
             for (int i = 0; i < AIPhysicsSteps; i++) {
                 wall_node_inputs.Add((next_pos, input_lr));
                 next_vel += gravitationalAcceleration * Time.fixedDeltaTime;
-                next_pos += vel * Time.fixedDeltaTime;
+                next_pos += vel;
             }
 
             if (vel.y > 0) {
@@ -418,7 +406,7 @@ public class DynamicCharacter : Character
                     for (int i = 0; i < AIPhysicsSteps; i++) {
                         ascend_node_inputs.Add((next_pos, input_lr));
                         next_vel += gravitationalAcceleration * Time.fixedDeltaTime;
-                        next_pos += vel * Time.fixedDeltaTime;
+                        next_pos += vel;
                         if ((next_pos - pos).magnitude >= look_up.distance - collider_height/2f) {
                             break;
                         }
@@ -445,7 +433,7 @@ public class DynamicCharacter : Character
                     for (int i = 0; i < AIPhysicsSteps; i++) {
                         fall_node_inputs.Add((next_pos, input_lr));
                         next_vel += gravitationalAcceleration * Time.fixedDeltaTime;
-                        next_pos += vel * Time.fixedDeltaTime;
+                        next_pos += vel;
                         if ((next_pos - pos).magnitude >= look_down.distance - collider_height/2f) {
                             break;
                         }
@@ -491,8 +479,6 @@ public class DynamicCharacter : Character
     
     protected (float, List<(Vector2, int)>) ExploreAerial(Vector2 pos, Vector2 vel, int direction_sign, int depth, int max_depth)
     {
-        DebugSquare(pos, Color.red);
-        
         float best_fitness = Vector2.Distance(pos, AIDestination);
         List<(Vector2, int)> node_inputs = new List<(Vector2, int)>(); node_inputs.Add((pos, 0));
         List<(Vector2, int)> best_future_path = new List<(Vector2, int)>();
@@ -522,7 +508,7 @@ public class DynamicCharacter : Character
             aerial_inputs.Add((next_pos, input_lr));
             next_vel.x = next_vel.x * (1 - tightness) + (direction_sign * moveSpeed) * tightness;
             next_vel += gravitationalAcceleration * Time.fixedDeltaTime;
-            next_pos += vel * Time.fixedDeltaTime;
+            next_pos += vel;
         }
 
         RaycastHit2D look_ahead = Physics2D.Raycast(pos, (next_pos - pos).normalized, (next_pos - pos).magnitude, AITerrainMask);
@@ -537,7 +523,7 @@ public class DynamicCharacter : Character
                     landing_inputs.Add((next_pos, input_lr));
                     next_vel.x = next_vel.x * (1 - tightness) + (direction_sign * moveSpeed) * tightness;
                     next_vel += gravitationalAcceleration * Time.fixedDeltaTime;
-                    next_pos += vel * Time.fixedDeltaTime;
+                    next_pos += vel;
                     if ((next_pos - pos).magnitude >= look_ahead.distance - collider_height / 2f) {
                         break;
                     }
@@ -562,7 +548,7 @@ public class DynamicCharacter : Character
                     wall_inputs.Add((next_pos, input_lr));
                     next_vel.x = next_vel.x * (1 - tightness) + (direction_sign * moveSpeed) * tightness;
                     next_vel += gravitationalAcceleration * Time.fixedDeltaTime;
-                    next_pos += vel * Time.fixedDeltaTime;
+                    next_pos += vel;
                     if ((next_pos - pos).magnitude >= look_ahead.distance - collider_width / 2f) {
                         break;
                     }
@@ -578,7 +564,7 @@ public class DynamicCharacter : Character
                     bonk_inputs.Add((next_pos, input_lr));
                     next_vel.x = next_vel.x * (1 - tightness) + (direction_sign * moveSpeed) * tightness;
                     next_vel += gravitationalAcceleration * Time.fixedDeltaTime;
-                    next_pos += vel * Time.fixedDeltaTime;
+                    next_pos += vel;
                     if ((next_pos - pos).magnitude >= look_ahead.distance - collider_height / 2f) {
                         break;
                     }
