@@ -5,6 +5,9 @@ using UnityEngine;
 public class Wood : Substance
 {
     [SerializeField] GameObject emberGenerator;
+
+    [SerializeField] GameObject nonCollidingEmberGenerator;
+
     [SerializeField] Material spriteRegular;
     [SerializeField] Material burnShader;
     [SerializeField] Material instanceBurnShader;
@@ -37,6 +40,7 @@ public class Wood : Substance
         type = "Wood";
         this.gameObject.GetComponent<SpriteRenderer>().color = Color.white;
         emberGenerator.SetActive(false);
+        nonCollidingEmberGenerator.SetActive(false);
         instanceBurnShader = Material.Instantiate(burnShader);
     }
     
@@ -59,11 +63,27 @@ public class Wood : Substance
         }
     }
 
+
+    private void OnParticleCollision(GameObject other) 
+    {
+        if (other.gameObject.GetComponent<Substance>() != null)
+        { 
+            Substance triggerSubstance = other.gameObject.GetComponent<Substance>();
+            float burnProbability = Random.Range(0, 100);
+            
+            if (burnProbability < 40)
+            {
+                SubstanceInteract(triggerSubstance);
+            }
+        }
+    }
+
     public override void SubstanceInteract(Substance triggerSubstance)
     {
         if (triggerSubstance.GetSubstanceType() == "Flame")
         {
             emberGenerator.SetActive(true);
+            nonCollidingEmberGenerator.SetActive(true);
             GetComponent<SpriteRenderer>().material = instanceBurnShader;
             isBurning = true;
             this.gameObject.GetComponent<SpriteRenderer>().color = Color.yellow;
