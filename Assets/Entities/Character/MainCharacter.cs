@@ -19,6 +19,11 @@ public class MainCharacter : DynamicCharacter
     public bool isInCutscene = false;
     private bool cancelAfterDialogueJump = false;
 
+    public bool isFollowing = true;
+    public Transform helperFollow = null;
+    public Vector2 followOffset = Vector2.zero;
+    public float tooFarAwayDistance = 14f;
+
     protected void Awake()
     {
         GameEvents.PlayerRegainFullControl += OnPlayerRegainFullControl;
@@ -53,6 +58,14 @@ public class MainCharacter : DynamicCharacter
             inputFlags |= (Input.GetAxis("Up")>0) ? INPUT_UP : 0;
             inputFlags |= (Input.GetAxis("Jump")>0 && !cancelAfterDialogueJump) ? INPUT_JUMP : 0;
             inputFlags |= (Input.GetAxis("Fire1")>0) ? INPUT_SPECIAL : 0;
+        }
+        if (!isInCutscene && helperFollow && (controlMode == controlModes.TopHalf || controlMode == controlModes.NPC)) {
+            if ((helperFollow.position - transform.position).magnitude > tooFarAwayDistance) {
+                isFollowing = true;
+            }
+            if (isFollowing) {
+                MoveToPoint((Vector2)helperFollow.position + followOffset);
+            }
         }
         base.FixedUpdate();
     }
@@ -112,6 +125,7 @@ public class MainCharacter : DynamicCharacter
     {
         if (readyToMove && (controlMode == controlModes.BottomHalf || controlMode == controlModes.NPC)) {
             MoveToPoint(args.pos);
+            isFollowing = false;
         }
     }
 

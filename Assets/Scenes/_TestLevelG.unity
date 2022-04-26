@@ -10211,6 +10211,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 909b06c347d0f6543886c1eeb1916051, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  radius_of_influence: 30
   size: {x: 20, y: 1}
   left_border: 0
   right_border: 0
@@ -10900,6 +10901,7 @@ MonoBehaviour:
   zoom: 1
   scrollSpeed: 10
   zoomSpeed: 10
+  farAwayScale: 0.2
 --- !u!114 &982404165
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11075,6 +11077,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 909b06c347d0f6543886c1eeb1916051, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  radius_of_influence: 30
   size: {x: 40, y: 3}
   left_border: 0
   right_border: 0
@@ -11370,6 +11373,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fa129d7ebfdb4b45a5aed89be3419ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &1675444738 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4115434783252314968, guid: ae8006234f331a94284bf6284c776fac, type: 3}
+  m_PrefabInstance: {fileID: 2077699289}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1711233485
 GameObject:
   m_ObjectHideFlags: 0
@@ -11667,6 +11675,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 909b06c347d0f6543886c1eeb1916051, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  radius_of_influence: 30
   size: {x: 20, y: 1}
   left_border: 0
   right_border: 0
@@ -11900,6 +11909,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 909b06c347d0f6543886c1eeb1916051, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  radius_of_influence: 30
   size: {x: 1, y: 30}
   left_border: 0
   right_border: 1
@@ -11934,6 +11944,18 @@ PrefabInstance:
     - target: {fileID: 5155614116163283365, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
       propertyPath: controlMode
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5155614116163283365, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
+      propertyPath: helperFollow
+      value: 
+      objectReference: {fileID: 1675444738}
+    - target: {fileID: 5155614116163283365, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
+      propertyPath: followOffset.x
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5155614116163283365, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
+      propertyPath: followOffset.y
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5155614116163283368, guid: 52fca29c3e615f54fae0a2e3d3280650, type: 3}
       propertyPath: m_Name
