@@ -6,6 +6,8 @@ using UnityEngine;
 public class ScreenBorder : CameraConstraint
 {
 
+    [SerializeField] private float radius_of_influence = 30f;
+    
     [SerializeField] private Vector2 size;
 
     [SerializeField] private bool left_border = false;
@@ -15,11 +17,12 @@ public class ScreenBorder : CameraConstraint
 
     [Tooltip("If false, the border is disabled when the player is behind it")]
     [SerializeField] private bool is_strong = true;
-    
+
     public override (Vector3, float) ModifyCamera(Vector3 cam_target_pos, float cam_target_zoom, float vert_ext, float horiz_ext, DynamicCharacter follow_char, Vector3 follow_position, bool on_ground)
     {
         // this is a bit gross and I could have moved these to functions but I didn't
         Vector3 pos = transform.position;
+        if ((cam_target_pos - pos).magnitude > radius_of_influence) return (cam_target_pos, cam_target_zoom);
         if (left_border) {
             // check if camera is in right zone
             if (cam_target_pos.y < pos.y + size.y / 2 && cam_target_pos.y > pos.y - size.y / 2 &&
