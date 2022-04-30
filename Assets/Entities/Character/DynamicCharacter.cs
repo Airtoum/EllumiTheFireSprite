@@ -182,424 +182,235 @@ public class DynamicCharacter : Character
         AIDestination = destination;
     }
 
-    protected virtual void AIInput()
+        protected virtual void AIInput()
     {
         if (!AIActivated) return;
-        ExplorePlatform();
-    }
-
-    protected (float, List<(Vector2, int)>) ExplorePlatform()
-    {
-        Vector2 pos = cl.bounds.center;
-        Vector2 vel = rb.velocity;
-        
-        float best_fitness = Vector2.Distance(pos, AIDestination);
-        List<(Vector2, int)> best_path = new List<(Vector2, int)>(); best_path.Add((pos, 0));
-        
-        void CheckIfBetter(float fitness, List<(Vector2, int)> new_path)
-        {
-            if (fitness < best_fitness) {
-                best_fitness = fitness;
-                best_path = new_path;
-            }
+        if (Vector2.Distance(transform.position, AIDestination) <= AICloseEnoughDistance) {
+            AIActivated = false;
+            inputFlags = 0;
+            return;
+            // perhaps allow for chaining of MoveToPoints in a sequence
         }
 
-        (float left_fitness, List<(Vector2, int)> left_path) = ExploreLateral(pos, vel, false, 0, AIMaxDepth);
-        CheckIfBetter(left_fitness, left_path);
-        (float right_fitness, List<(Vector2, int)> right_path) = ExploreLateral(pos, vel, true, 0, AIMaxDepth);
-        CheckIfBetter(right_fitness, right_path);
         if (onGround) {
-            (float jump_left_fitness, List<(Vector2, int)> jump_left_path) = ExploreAerial(pos, vel, -1, 0, AIMaxDepth);
-            CheckIfBetter(jump_left_fitness, jump_left_path);
-            (float jump_up_fitness, List<(Vector2, int)> jump_up_path) = ExploreAerial(pos, vel, 0, 0, AIMaxDepth);
-            CheckIfBetter(jump_up_fitness, jump_up_path);
-            (float jump_right_fitness, List<(Vector2, int)> jump_right_path) = ExploreAerial(pos, vel, 1, 0, AIMaxDepth);
-            CheckIfBetter(jump_right_fitness, jump_right_path);
-        }
-
-        inputFlags = 0;
-        if (best_path.Count > 0) {
-            inputFlags = best_path[0].Item2;
-        }
-        
-        DebugText.SetText(best_path.Count + "\n" + best_fitness);
-        for (int i = 0; i < best_path.Count; i++) {
-            if (i < best_path.Count - 1) {
-                Debug.DrawLine(best_path[i].Item1, best_path[i+1].Item1, Color.white);
-            }
-            DebugDiamond(best_path[i].Item1, Color.white);
-        }
-
-        return (best_fitness, best_path);
-    }
-
-    protected RaycastHit2D TripleRaycast(Vector2 center, Vector2 offset, Vector2 direction, float max_length, int layer_mask)
-    {
-        RaycastHit2D result_hit;
-        RaycastHit2D hit1 = Physics2D.Raycast(center, direction, max_length, layer_mask);
-        RaycastHit2D hit2 = Physics2D.Raycast(center + offset, direction, max_length, layer_mask);
-        RaycastHit2D hit3 = Physics2D.Raycast(center - offset, direction, max_length, layer_mask);
-        if (hit1 && hit1.distance < hit2.distance && hit1.distance < hit3.distance) {
-            result_hit = hit1;
-        } else if (hit2 && hit2.distance < hit3.distance) {
-            result_hit = hit2;
+            ExplorePlatform();
         } else {
-            result_hit = hit3;
+            // leave current inputflags untouched
         }
-        return result_hit;
+
     }
 
-    // returns optimal fitness, then approximate list of inputs to get there
-    protected (float, List<(Vector2, int)>) ExploreLateral(Vector2 pos, Vector2 vel, bool is_right, int depth, int max_depth)
+    protected void ExplorePlatform()
     {
-        DebugSquare(pos, Color.green);
-        
-        float best_fitness = Vector2.Distance(pos, AIDestination);
-        List<(Vector2, int)> node_inputs = new List<(Vector2, int)>(); node_inputs.Add((pos, 0));
-        List<(Vector2, int)> best_future_path = new List<(Vector2, int)>();
-
-        if (depth > max_depth) {
-            return (best_fitness, node_inputs);
-        }
-
-        void CheckIfBetter(float fitness, List<(Vector2, int)> new_node_inputs, List<(Vector2, int)> new_future_path)
-        {
-            if (fitness < best_fitness) {
-                best_fitness = fitness;
-                node_inputs = new_node_inputs;
-                best_future_path = new_future_path;
-            }
-        }
-
-        float collider_width = cl.bounds.size.x;
-        float collider_height = cl.bounds.size.y;
-        int input_lr = is_right ? INPUT_RIGHT : INPUT_LEFT;
-
-        RaycastHit2D look_down = TripleRaycast(pos, Vector2.left * collider_width/2f, Vector2.down, AICliffDownwarpDistance, AITerrainMask);
-
-        if (look_down) {
-            // there is floor beneath us
-            vel.y = 0;
-            
-            // let's snap to be an appropriate distance to it (for slopes)
-            pos = look_down.point + (Vector2.up * collider_height * 0.5f);
-            Vector2 original_pos = pos;
-            Vector2 original_vel = vel;
-            
-            // let's continue walking
-            Vector2 next_pos = pos;
-            Vector2 next_vel = vel;
-            List<(Vector2, int)> walk_node_inputs = new List<(Vector2, int)>();
-            List<(Vector2, int)> jump_node_inputs = new List<(Vector2, int)>(); jump_node_inputs.Add((pos, INPUT_JUMP | input_lr));
-            for (int i = 0; i < AIPhysicsSteps; i++) {
-                walk_node_inputs.Add((next_pos, input_lr));
-                next_vel.x = next_vel.x * (1 - tightness) + (is_right ? moveSpeed : -moveSpeed) * tightness;
-                next_pos += vel * Time.fixedDeltaTime;
-            }
-            
-            RaycastHit2D look_right = Physics2D.Raycast(pos, is_right ? Vector2.right : Vector2.left, (next_pos - pos).magnitude, AITerrainMask);
-
-            if (look_right) {
-                // there's something to the right of us; let's assume its a wall
-                
-                // let's re-do the movement, to find out where to stop)
-                next_pos = pos;
-                next_vel = vel;
-                int i = 0;
-                List<(Vector2, int)> wall_node_inputs = new List<(Vector2, int)>();
-                for (i = 0; i < AIPhysicsSteps; i++) {
-                    wall_node_inputs.Add((next_pos, input_lr));
-                    next_vel.x = next_vel.x * (1 - tightness) + (is_right ? moveSpeed : -moveSpeed) * tightness;
-                    next_pos += vel * Time.fixedDeltaTime;
-                    if ((next_pos - pos).magnitude >= look_right.distance - collider_width/2f) {
-                        break;
-                    }
-                }
-                pos = next_pos;
-                vel = new Vector2(0, next_vel.y);
-                (float wall_fitness, List<(Vector2, int)> wall_path) = ExploreWall(pos, vel, is_right, depth + 1, max_depth);
-                CheckIfBetter(wall_fitness, wall_node_inputs, wall_path);
-            } else {
-                // there's nothing to our right
-                pos = next_pos;
-                vel = new Vector2(next_vel.x, 0);
-                
-                RaycastHit2D look_down_again = Physics2D.Raycast(pos, Vector2.down, AICliffDownwarpDistance, AITerrainMask);
-                if (look_down_again) {
-                    // we're still on ground
-                    
-                    // let's snap to be an appropriate distance to it (for slopes)
-                    pos = look_down_again.point + (Vector2.up * collider_height * 0.5f);
-                    
-                    (float walk_fitness, List<(Vector2, int)> walk_path) = ExploreLateral(pos, vel, is_right, depth + 1, max_depth);
-                    CheckIfBetter(walk_fitness, walk_node_inputs, walk_path);
-                } else {
-                    // we will not be on ground anymore, but we should be able to jump
-                    // what if we fall off? (slightly inaccurate)
-                    (float fall_fitness, List<(Vector2, int)> fall_path) = ExploreAerial(pos, vel, is_right ? 1 : -1, depth + 1, max_depth);
-                    CheckIfBetter(fall_fitness, walk_node_inputs, fall_path);
-                    // what if we jump off?
-                    (float jump_fitness, List<(Vector2, int)> jump_path) = ExploreAerial(original_pos, new Vector2(vel.x, jumpAmount), is_right ? 1 : -1, depth + 1, max_depth);
-                    CheckIfBetter(jump_fitness, jump_node_inputs, jump_path);
-                }
-            }
+        Vector2 pos = transform.position;
+        (float, AIMoves) left = ExploreLateral(pos, false, 0, 20);
+        (float, AIMoves) right = ExploreLateral(pos, true, 0, 20);
+        DebugText.SetText(Mathf.Min(left.Item1, right.Item1).ToString());
+        float dist = Vector2.Distance(pos, AIDestination);
+        int lateral_choice = 0;
+        AIMoves selected_input;
+        if (left.Item1 < right.Item1) {
+            lateral_choice = INPUT_LEFT;
+            selected_input = left.Item2;
         } else {
-            // we aren't on the ground (we might not have coyote time, either)
-            List<(Vector2, int)> fall_inputs = new List<(Vector2, int)>();
-            fall_inputs.Add((pos, input_lr));
-            (float fall_fitness, List<(Vector2, int)> fall_path) = ExploreAerial(pos, vel, is_right ? 1 : -1, depth + 1, max_depth);
-            CheckIfBetter(fall_fitness, fall_inputs, fall_path);
+            lateral_choice = INPUT_RIGHT;
+            selected_input = right.Item2;
         }
 
-        List<(Vector2, int)> final_path = new List<(Vector2, int)>();
-        final_path.AddRange(node_inputs);
-        final_path.AddRange(best_future_path);
-        return (best_fitness, final_path);
+        switch (selected_input) {
+            case AIMoves.Lateral:
+                inputFlags = lateral_choice;
+                break;
+            case AIMoves.LateralUp:
+                inputFlags = INPUT_JUMP | lateral_choice;
+                break;
+            case AIMoves.Up:
+                inputFlags = INPUT_JUMP;
+                break;
+            case AIMoves.Stop:
+                inputFlags = 0;
+                break;
+            case AIMoves.Down:
+                inputFlags = 0;
+                break;
+            case AIMoves.JumpLeft:
+                inputFlags = INPUT_JUMP | INPUT_LEFT;
+                break;
+            case AIMoves.JumpUpwards:
+                inputFlags = INPUT_JUMP;
+                break;
+            case AIMoves.JumpRight:
+                inputFlags = INPUT_JUMP | INPUT_RIGHT;
+                break;
+            default:
+                inputFlags = 0;
+                break;
+        }
+
+        if (Mathf.Min(left.Item1, right.Item1) > dist - AICloseEnoughDistance) {
+            AIActivated = false;
+            inputFlags = 0;
+        }
     }
 
-    protected (float, List<(Vector2, int)>) ExploreWall(Vector2 pos, Vector2 vel, bool is_right, int depth, int max_depth)
+    protected float ExploreDown(Vector2 pos, bool is_right, int depth, int max_depth)
     {
-        DebugSquare(pos, Color.magenta);
-        
-        float best_fitness = Vector2.Distance(pos, AIDestination);
-        List<(Vector2, int)> node_inputs = new List<(Vector2, int)>(); node_inputs.Add((pos, 0));
-        List<(Vector2, int)> best_future_path = new List<(Vector2, int)>();
-
-        if (depth > max_depth) {
-            return (best_fitness, node_inputs);
-        }
-        
-        void CheckIfBetter(float fitness, List<(Vector2, int)> new_node_inputs, List<(Vector2, int)> new_future_path)
-        {
-            if (fitness < best_fitness) {
-                best_fitness = fitness;
-                node_inputs = new_node_inputs;
-                best_future_path = new_future_path;
-            }
-        }
-
-        float collider_width = cl.bounds.size.x;
-        float collider_height = cl.bounds.size.y;
-        int input_lr = is_right ? INPUT_RIGHT : INPUT_LEFT;
-        
-        // double check; are we still at a wall? try moving right
-        
-        Vector2 next_pos = pos;
-        Vector2 next_vel = vel;
-        List<(Vector2, int)> walk_node_inputs = new List<(Vector2, int)>();
-        for (int i = 0; i < AIPhysicsSteps; i++) {
-            walk_node_inputs.Add((next_pos, input_lr));
-            next_vel.x = next_vel.x * (1 - tightness) + (is_right ? moveSpeed : -moveSpeed) * tightness;
-            next_pos += vel * Time.fixedDeltaTime;
-        }
-
-        RaycastHit2D look_right = TripleRaycast(pos, Vector2.down * collider_height/2f, is_right ? Vector2.right : Vector2.left, (next_pos - pos).magnitude, AITerrainMask);
-
-        if (look_right) {
-            // we are still at a wall, search in the direction we're moving (up or down)
-            vel.x = 0;
-            next_pos = pos;
-            next_vel = vel;
-            List<(Vector2, int)> wall_node_inputs = new List<(Vector2, int)>();
-            for (int i = 0; i < AIPhysicsSteps; i++) {
-                wall_node_inputs.Add((next_pos, input_lr));
-                next_vel += gravitationalAcceleration * Time.fixedDeltaTime;
-                next_pos += vel * Time.fixedDeltaTime;
-            }
-
-            if (vel.y > 0) {
-                // we're moving up
-                RaycastHit2D look_up = Physics2D.Raycast(pos, Vector2.down, (next_pos - pos).magnitude, AITerrainMask);
-
-                if (look_up && look_up.collider.gameObject.layer != LayerMask.NameToLayer("Semisolid")) {
-                    // there's something above us
-                    // who knows, we might drop down onto a semisolid platform
-                    List<(Vector2, int)> ascend_node_inputs = new List<(Vector2, int)>();
-                    for (int i = 0; i < AIPhysicsSteps; i++) {
-                        ascend_node_inputs.Add((next_pos, input_lr));
-                        next_vel += gravitationalAcceleration * Time.fixedDeltaTime;
-                        next_pos += vel * Time.fixedDeltaTime;
-                        if ((next_pos - pos).magnitude >= look_up.distance - collider_height/2f) {
-                            break;
-                        }
-                    }
-                    pos = next_pos;
-                    vel = Vector2.zero;
-                    (float wall_fitness, List<(Vector2, int)> wall_path) = ExploreWall(pos, vel, is_right, depth + 1, max_depth);
-                    CheckIfBetter(wall_fitness, ascend_node_inputs, wall_path);
-                } else {
-                    // there's nothing above us, continue upwards
-                    pos = next_pos;
-                    vel = next_vel;
-
-                    (float wall_fitness, List<(Vector2, int)> wall_path) = ExploreWall(pos, vel, is_right, depth + 1, max_depth);
-                    CheckIfBetter(wall_fitness, wall_node_inputs, wall_path);
-                }
-            } else {
-                // we're moving down
-                RaycastHit2D look_down = Physics2D.Raycast(pos, Vector2.down, (next_pos - pos).magnitude, AITerrainMask);
-
-                if (look_down) {
-                    // we're hitting ground
-                    List<(Vector2, int)> fall_node_inputs = new List<(Vector2, int)>();
-                    for (int i = 0; i < AIPhysicsSteps; i++) {
-                        fall_node_inputs.Add((next_pos, input_lr));
-                        next_vel += gravitationalAcceleration * Time.fixedDeltaTime;
-                        next_pos += vel * Time.fixedDeltaTime;
-                        if ((next_pos - pos).magnitude >= look_down.distance - collider_height/2f) {
-                            break;
-                        }
-                    }
-                    pos = next_pos;
-                    vel = Vector2.zero;
-                    // we might have fallen someplace with stuff on the right or left
-                    // this may backtrack but it should be manageable
-                    RaycastHit2D land_look_left = Physics2D.Raycast(pos, Vector2.left, collider_width * 2, AITerrainMask);
-                    RaycastHit2D land_look_right = Physics2D.Raycast(pos, Vector2.right, collider_width * 2, AITerrainMask);
-                    if (!land_look_left) {
-                        (float left_fitness, List<(Vector2, int)> left_path) = ExploreLateral(pos, vel, false, depth + 1, max_depth);
-                        CheckIfBetter(left_fitness, fall_node_inputs, left_path);
-                    }
-                    if (!land_look_right) {
-                        (float right_fitness, List<(Vector2, int)> right_path) = ExploreLateral(pos, vel, true, depth + 1, max_depth);
-                        CheckIfBetter(right_fitness, fall_node_inputs, right_path);
-                    }
-                } else {
-                    // there's nothing beneath us, continue downwards
-                    pos = next_pos;
-                    vel = next_vel;
-                    
-                    (float wall_fitness, List<(Vector2, int)> wall_path) = ExploreWall(pos, vel, is_right, depth + 1, max_depth);
-                    CheckIfBetter(wall_fitness, wall_node_inputs, wall_path);
-                }
-            }
-        } else {
-            // good! there is no more wall! let's move right and then switch over to walk
-            pos = next_pos;
-            pos = next_vel;
-            
-            (float walk_fitness, List<(Vector2, int)> walk_path) = ExploreLateral(pos, vel, is_right, depth + 1, max_depth);
-            CheckIfBetter(walk_fitness, walk_node_inputs, walk_path);
-        }
-
-        List<(Vector2, int)> final_path = new List<(Vector2, int)>();
-        final_path.AddRange(node_inputs);
-        final_path.AddRange(best_future_path);
-        return (best_fitness, final_path);
+        // not implemented
+        return 0;
     }
-
     
-    protected (float, List<(Vector2, int)>) ExploreAerial(Vector2 pos, Vector2 vel, int direction_sign, int depth, int max_depth)
+    // returns how close it gets to AIDestination on this path
+    protected (float, AIMoves) ExploreLateral(Vector2 pos, bool is_right, int depth, int max_depth)
     {
+        float dist = Vector2.Distance(pos, AIDestination);
+        if (depth > max_depth) return (dist, AIMoves.Stop);
+        float dx = (is_right ? 1f : -1f) * cl.bounds.size.x;
+        float dy = cl.bounds.size.y;
+        float best = Mathf.Min(dist);
+        AIMoves move = AIMoves.Stop;
+
+        void CheckIfBetter(float score, AIMoves new_move)
+        {
+            if (score < best) {
+                best = score + AIDepthPenalty * depth;
+                move = new_move;
+            }
+        }
+        
+        RaycastHit2D down = Physics2D.Raycast(pos, Vector2.down, AICliffDropDistance, AITerrainMask);
+        RaycastHit2D down_left = Physics2D.Raycast(pos + new Vector2(-cl.bounds.extents.x, 0), Vector2.down, AICliffDropDistance, AITerrainMask);
+        RaycastHit2D down_right = Physics2D.Raycast(pos + new Vector2(cl.bounds.extents.x, 0), Vector2.down, AICliffDropDistance, AITerrainMask);
+        if (down || down_left || down_right) {
+            // there is ground beneath us
+            float highest_floor = down.distance;
+            if (down_left) highest_floor = Mathf.Min(highest_floor, down_left.distance);
+            if (down_right) highest_floor = Mathf.Min(highest_floor, down_right.distance);
+            pos += Vector2.down * (highest_floor - cl.bounds.extents.y);
+            RaycastHit2D lateral = Physics2D.Raycast(pos, new Vector2(dx, 0f), Mathf.Abs(dx), AITerrainMask);
+            if (lateral) {
+                // there's something to our side
+                Debug.DrawLine(lateral.point, lateral.point + lateral.normal, Color.yellow);
+                if (Mathf.Abs(Vector2.Angle(lateral.normal, Vector2.up)) <= steepestSlopeDegrees) {
+                    // we've hit a slope, repeat higher
+                    (float, AIMoves) result = ExploreLateral(pos + new Vector2(dx, cl.bounds.size.y), is_right, depth, max_depth);
+                    DebugSquare(pos, Color.yellow);
+                    best = Mathf.Min(best, result.Item1);
+                    return (best, result.Item2);
+                } else {
+                    // we've hit a wall, Explore Wall
+                    (float, AIMoves) result = ExploreWall(pos, is_right, depth, max_depth, 0);
+                    DebugSquare(pos, Color.magenta);
+                    best = Mathf.Min(best, result.Item1);
+                    return (best, AIMoves.LateralUp);
+                }
+            } else {
+                // keep going
+                (float, AIMoves) result = ExploreLateral(pos + new Vector2(dx, 0f), is_right, depth + 1, max_depth);
+                DebugSquare(pos, Color.green);
+                CheckIfBetter(result.Item1, AIMoves.Lateral);
+                for (int i = 0; i < AIMarkers.Markers.Count; i++) {
+                    AIMarker marker = AIMarkers.Markers[i];
+                    (bool is_marker, AIMarker.MarkerTypes marker_type, Vector2 marker_direction) = marker.ModifyAI(pos);
+                    if (is_marker) {
+                        switch (marker_type) {
+                            case AIMarker.MarkerTypes.JumpMarker:
+                                (float, AIMoves) jump_result = ExploreJump(pos, marker_direction, depth + 1, max_depth);
+                                AIMoves jump_move = AIMoves.JumpUpwards;
+                                if (marker_direction.x < 0) jump_move = AIMoves.JumpLeft;
+                                if (marker_direction.x > 0) jump_move = AIMoves.JumpRight;
+                                CheckIfBetter(jump_result.Item1, jump_move);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+                return (best, move);
+            }
+        } else {
+            // there was no ground found, this is an edge
+            DebugSquare(pos, Color.red);
+            return (best, AIMoves.Stop);
+        }
+    }
+
+    protected (float, AIMoves) ExploreWall(Vector2 pos, bool is_right, int depth, int max_depth, int wall_depth)
+    {
+        float dist = Vector2.Distance(pos, AIDestination);
+        if (depth > max_depth) return (dist, AIMoves.Stop);
+        float max_jump_height = - jumpAmount * jumpAmount / (2 * gravitationalAcceleration.y);
+        float dy = cl.bounds.size.y;
+        float dx = (is_right ? 1f : -1f) * cl.bounds.size.x;
+        int max_wall_depth = Mathf.RoundToInt(max_jump_height / dy); 
+        if (wall_depth > max_wall_depth) return (dist, AIMoves.Stop);
+        
+        float best = Mathf.Min(dist);
+        RaycastHit2D lateral = Physics2D.Raycast(pos, new Vector2(dx, 0f), Mathf.Abs(dx), AITerrainMask);
+        if (lateral) {
+            // the wall is still there
+            RaycastHit2D up = Physics2D.Raycast(pos, Vector2.up, dy, AITerrainMask);
+            if (up) {
+                // there is a ceiling
+                DebugDiamond(pos, Color.red);
+                return (dist, AIMoves.Stop);
+            } else {
+                // the wall continues up
+                (float, AIMoves) result = ExploreWall(pos + new Vector2(0f, dy), is_right, depth + 1, max_depth, wall_depth + 1);
+                DebugDiamond(pos, Color.magenta);
+                best = Mathf.Min(best, result.Item1);
+                return (best, AIMoves.LateralUp);
+            }
+        } else {
+            // the wall is gone, implies ground
+            (float, AIMoves) result = ExploreLateral(pos + new Vector2(dx, 0f), is_right, depth + 1, max_depth);
+            DebugDiamond(pos, Color.green);
+            best = Mathf.Min(best, result.Item1);
+            return (best, AIMoves.Lateral);
+        }
+    }
+
+    protected (float, AIMoves) ExploreJump(Vector2 pos, Vector2 vel, int depth, int max_depth)
+    {
+        float best = Vector2.Distance(pos, AIDestination);
+        AIMoves move = AIMoves.Stop;
         DebugSquare(pos, Color.red);
         
-        float best_fitness = Vector2.Distance(pos, AIDestination);
-        List<(Vector2, int)> node_inputs = new List<(Vector2, int)>(); node_inputs.Add((pos, 0));
-        List<(Vector2, int)> best_future_path = new List<(Vector2, int)>();
+        float timestep = 0.2f;
+        Vector2 next_pos = pos +
+                           Ultramath.TrajectoryPos(vel.y, gravitationalAcceleration.y, timestep) * Vector2.up +
+                           Vector2.right * vel.x * timestep;
+        Vector2 next_vel = vel;
+        next_vel.y = Ultramath.TrajectoryVel(vel.y, gravitationalAcceleration.y, timestep);
 
-        if (depth > max_depth) {
-            return (best_fitness, node_inputs);
-        }
-        
-        void CheckIfBetter(float fitness, List<(Vector2, int)> new_node_inputs, List<(Vector2, int)> new_future_path)
+        void CheckIfBetter(float score, AIMoves new_move)
         {
-            if (fitness < best_fitness) {
-                best_fitness = fitness;
-                node_inputs = new_node_inputs;
-                best_future_path = new_future_path;
+            if (score < best) {
+                best = score;
+                move = new_move;
             }
         }
 
-        float collider_width = cl.bounds.size.x;
-        float collider_height = cl.bounds.size.y;
-        int input_lr = direction_sign == 0 ? 0 : (direction_sign == 1 ? INPUT_RIGHT : INPUT_LEFT);
-        
-        // find next expected position
-        Vector2 next_pos = pos;
-        Vector2 next_vel = vel;
-        List<(Vector2, int)> aerial_inputs = new List<(Vector2, int)>();
-        for (int i = 0; i < AIPhysicsSteps; i++) {
-            aerial_inputs.Add((next_pos, input_lr));
-            next_vel.x = next_vel.x * (1 - tightness) + (direction_sign * moveSpeed) * tightness;
-            next_vel += gravitationalAcceleration * Time.fixedDeltaTime;
-            next_pos += vel * Time.fixedDeltaTime;
-        }
-
-        RaycastHit2D look_ahead = Physics2D.Raycast(pos, (next_pos - pos).normalized, (next_pos - pos).magnitude, AITerrainMask);
+        RaycastHit2D look_ahead = Physics2D.Raycast(pos, (next_pos - pos), (next_pos - pos).magnitude, AITerrainMask);
 
         if (look_ahead) {
-            // we hit something
-            float collision_angle = Vector2.Angle(look_ahead.normal, Vector2.up);
-            if (collision_angle < steepestSlopeDegrees) {
-                // it's standable
-                List<(Vector2, int)> landing_inputs = new List<(Vector2, int)>();
-                for (int i = 0; i < AIPhysicsSteps; i++) {
-                    landing_inputs.Add((next_pos, input_lr));
-                    next_vel.x = next_vel.x * (1 - tightness) + (direction_sign * moveSpeed) * tightness;
-                    next_vel += gravitationalAcceleration * Time.fixedDeltaTime;
-                    next_pos += vel * Time.fixedDeltaTime;
-                    if ((next_pos - pos).magnitude >= look_ahead.distance - collider_height / 2f) {
-                        break;
-                    }
-                }
-                pos = next_pos;
-                vel = new Vector2(next_vel.x, 0);
-                // could be either left or right, we might have landed somewhere new
-                RaycastHit2D land_look_left = Physics2D.Raycast(pos, Vector2.left, collider_width * 2, AITerrainMask);
-                RaycastHit2D land_look_right = Physics2D.Raycast(pos, Vector2.right, collider_width * 2, AITerrainMask);
-                if (!land_look_left){
-                    (float left_fitness, List<(Vector2, int)> left_path) = ExploreLateral(pos, vel, false, depth + 1, max_depth);
-                    CheckIfBetter(left_fitness, landing_inputs, left_path);
-                }
-                if (!land_look_right){
-                    (float right_fitness, List<(Vector2, int)> right_path) = ExploreLateral(pos, vel, true, depth + 1, max_depth);
-                    CheckIfBetter(right_fitness, landing_inputs, right_path);
-                }
-            } else if (collision_angle < 91) {
-                // probably a wall
-                List<(Vector2, int)> wall_inputs = new List<(Vector2, int)>();
-                for (int i = 0; i < AIPhysicsSteps; i++) {
-                    wall_inputs.Add((next_pos, input_lr));
-                    next_vel.x = next_vel.x * (1 - tightness) + (direction_sign * moveSpeed) * tightness;
-                    next_vel += gravitationalAcceleration * Time.fixedDeltaTime;
-                    next_pos += vel * Time.fixedDeltaTime;
-                    if ((next_pos - pos).magnitude >= look_ahead.distance - collider_width / 2f) {
-                        break;
-                    }
-                }
-                pos = next_pos;
-                vel = new Vector2(0, next_vel.y);
-                (float wall_fitness, List<(Vector2, int)> wall_path) = ExploreWall(pos, vel, direction_sign>=0, depth + 1, max_depth);
-                CheckIfBetter(wall_fitness, wall_inputs, wall_path);
+            // we're hitting something
+            if (Vector2.Angle(look_ahead.normal, Vector2.up) < steepestSlopeDegrees) {
+                // we can stand on it
+                (float, AIMoves) left_result = ExploreLateral(pos, false, depth + 1, max_depth);
+                (float, AIMoves) right_result = ExploreLateral(pos, true, depth + 1, max_depth);
+                CheckIfBetter(left_result.Item1, left_result.Item2);
+                CheckIfBetter(right_result.Item1, right_result.Item2);
+                return (best, move);
             } else {
-                // a ceiling
-                List<(Vector2, int)> bonk_inputs = new List<(Vector2, int)>();
-                for (int i = 0; i < AIPhysicsSteps; i++) {
-                    bonk_inputs.Add((next_pos, input_lr));
-                    next_vel.x = next_vel.x * (1 - tightness) + (direction_sign * moveSpeed) * tightness;
-                    next_vel += gravitationalAcceleration * Time.fixedDeltaTime;
-                    next_pos += vel * Time.fixedDeltaTime;
-                    if ((next_pos - pos).magnitude >= look_ahead.distance - collider_height / 2f) {
-                        break;
-                    }
-                }
-                pos = next_pos;
-                vel = new Vector2(next_vel.x, 0);
-                (float bonk_fitness, List<(Vector2, int)> bonk_path) = ExploreAerial(pos, vel, direction_sign, depth + 1, max_depth);
-                CheckIfBetter(bonk_fitness, bonk_inputs, bonk_path);
+                // give up
+                return (best, move);
             }
         } else {
-            // we didn't hit anything, do next jump step
-            pos = next_pos;
-            vel = next_vel;
-            (float aerial_fitness, List<(Vector2, int)> aerial_path) = ExploreAerial(pos, vel, direction_sign, depth + 1, max_depth);
-            CheckIfBetter(aerial_fitness, aerial_inputs, aerial_path);
+            // continue jump trajectory
+            (float, AIMoves) result = ExploreJump(next_pos, next_vel, depth + 1, max_depth);
+            CheckIfBetter(result.Item1, result.Item2);
+            return (best, move);
         }
-        
-        List<(Vector2, int)> final_path = new List<(Vector2, int)>();
-        final_path.AddRange(node_inputs);
-        final_path.AddRange(best_future_path);
-        return (best_fitness, final_path);
     }
 
     protected void DebugSquare(Vector3 pos, Color color)

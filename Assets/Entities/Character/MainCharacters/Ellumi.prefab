@@ -712,14 +712,19 @@ MonoBehaviour:
   AICliffDownwarpDistance: 0.5
   AIMaxDepth: 0
   AIJumpTimestep: 0.2
-  debug_text: {fileID: 0}
   AIJumpPenalization: 0.4
   AIGridFineness: 0.4
-  AIDepthPenalty: 0.2
+  AIDepthPenalty: 0.05
+  AIPathFollowNodeDistance: 0.4
+  AIPhysicsSteps: 25
   facingLeft: 0
   controlMode: 0
   readyToMove: 0
   isInCutscene: 0
+  isFollowing: 1
+  helperFollow: {fileID: 0}
+  followOffset: {x: 0, y: 0}
+  tooFarAwayDistance: 14
   flameSpawn: {fileID: 2348945602394527888, guid: 6ec74dc059d19694ea16b64be6e29c94, type: 3}
   flameSpawnFrom: {fileID: 4115434783252314968}
   flameSpeed: 4
@@ -924,7 +929,7 @@ Animator:
   m_GameObject: {fileID: 4878730668381138604}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: b745af8ca5d15524e8669d7af7e04ce0, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -948,6 +953,11 @@ MonoBehaviour:
   componentAnimator: {fileID: 0}
   mainRigidBody: {fileID: 0}
   ellumiScript: {fileID: 0}
+  currentJumpParticle: {fileID: 0}
+  jumpParticleRight: {fileID: 0}
+  jumpParticleLeft: {fileID: 0}
+  jumpParticleSpawnPoint: {fileID: 0}
+  minimumJumpHeight: 0
 --- !u!1 &5371049370700308721
 GameObject:
   m_ObjectHideFlags: 0
