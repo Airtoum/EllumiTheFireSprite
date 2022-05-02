@@ -374,6 +374,8 @@ public class DynamicCharacter : Character
         float best = Vector2.Distance(pos, AIDestination);
         AIMoves move = AIMoves.Stop;
         DebugSquare(pos, Color.red);
+
+        if (depth > max_depth) return (best, move);
         
         float timestep = 0.2f;
         Vector2 next_pos = pos +
