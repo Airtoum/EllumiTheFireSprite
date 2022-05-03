@@ -372,7 +372,9 @@ public class AirSprite : MainCharacter
     public override void OnMoveToUp(object sender, Vector3Args args)
     {
         if (readyToMove && (controlMode == controlModes.BottomHalf || controlMode == controlModes.NPC)) {
+            isFollowing = false;
             MoveToPoint(args.pos);
+            GameEvents.InvokePlayerRegainFullControl();
         }
     }
 }

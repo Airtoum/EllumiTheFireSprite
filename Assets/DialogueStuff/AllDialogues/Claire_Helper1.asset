@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6517bdd55252aac4d92669d63ec4a0ff, type: 3}
+  m_Name: Claire_Helper1
+  m_EditorClassIdentifier: 
+  sentences: []
+  pages:
+  - text: What do you want me to do?
+    speaker: Claire
+    speakerColor: {r: 0.75849056, g: 0.9280355, b: 1, a: 1}
+    options:
+    - text: Move
+      action: Move
+    - text: Abiltiy
+      action: Ability
+    - text: Talk
+      action: None
+    typeInterval: 0
+  - text: Boy, this puzzle sure looks hard!
+    speaker: Claire
+    speakerColor: {r: 0.75849056, g: 0.9280355, b: 1, a: 1}
+    options:
+    - text: Move
+      action: Move
+    - text: Abiltiy
+      action: Ability
+    - text: Talk
+      action: None
+    typeInterval: 0

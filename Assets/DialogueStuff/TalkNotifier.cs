@@ -41,7 +41,7 @@ public class TalkNotifier : MonoBehaviour
         }
         Destroy(gameObject);
     }
-    
+
     private IEnumerator AnimateEnter()
     {
         while (animation_timer < animation_time) {

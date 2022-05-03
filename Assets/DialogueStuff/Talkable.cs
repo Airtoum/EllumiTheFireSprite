@@ -14,6 +14,8 @@ public class Talkable : MonoBehaviour
     private TalkNotifier myTalkNotifier = null;
     public MainCharacter optionalCharacter = null;
     private bool isAlreadyTalking = false;
+
+    public bool noTalkNotifier = false;
     
     // Start is called before the first frame update
     void Start()
@@ -54,7 +56,7 @@ public class Talkable : MonoBehaviour
             // manage talk notifier
             if (myTalkNotifier) {
                 ;
-            } else {
+            } else if (!noTalkNotifier) {
                 myTalkNotifier = Instantiate(TalkNotifierGameObject, transform.position, Quaternion.identity)
                     .GetComponent<TalkNotifier>();
             }
