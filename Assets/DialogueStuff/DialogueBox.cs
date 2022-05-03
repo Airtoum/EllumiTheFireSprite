@@ -94,7 +94,7 @@ public class DialogueBox : MonoBehaviour
     public void DisplayNextSentence()
     {
         if (are_there_options) {
-            MakeSelection();
+            if (MakeSelection()) return;
         }
         
         if(pages.Count == 0)
@@ -152,6 +152,7 @@ public class DialogueBox : MonoBehaviour
         triggered = false;
         still_typing = false;
         pages.Clear();
+        are_there_options = false;
         StopAllCoroutines();
         GameEvents.InvokeEndDialogue();
         Hide();
@@ -163,6 +164,7 @@ public class DialogueBox : MonoBehaviour
         nameText.enabled = true;
         DialogueText.enabled = true;
         dialogueBox.enabled = true;
+        print("show");
     }
     
     private void Hide()
@@ -171,6 +173,7 @@ public class DialogueBox : MonoBehaviour
         DialogueText.enabled = false;
         dialogueBox.enabled = false;
         HideOptions();
+        print("hide");
     }
 
     private void ShowOptions()
@@ -213,7 +216,7 @@ public class DialogueBox : MonoBehaviour
         return (Input.GetAxis("Jump") > 0 || Input.GetAxis("Talk") > 0);
     }
 
-    private void MakeSelection()
+    private bool MakeSelection()
     {
         string command = "";
         command = last_page.options[which_selector - 1].action;
@@ -224,17 +227,21 @@ public class DialogueBox : MonoBehaviour
             case "Move":
                 GameEvents.InvokeSelectPositionPlayerControls(helper.gameObject);
                 EndDialogue();
+                return true;
                 break;
             case "Ability":
                 GameEvents.InvokeUnpairPlayerControls(helper.gameObject);
                 EndDialogue();
+                return true;
                 break;
             case "Quit":
                 EndDialogue();
+                return true;
                 break;
             default:
                 break;
         }
+        return false;
     }
     
 }

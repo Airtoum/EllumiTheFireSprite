@@ -28,11 +28,5 @@ MonoBehaviour:
   - text: Boy, this puzzle sure looks hard!
     speaker: Claire
     speakerColor: {r: 0.75849056, g: 0.9280355, b: 1, a: 1}
-    options:
-    - text: Move
-      action: Move
-    - text: Abiltiy
-      action: Ability
-    - text: Talk
-      action: None
+    options: []
     typeInterval: 0

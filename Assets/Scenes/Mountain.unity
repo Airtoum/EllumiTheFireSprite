@@ -357,7 +357,7 @@ MonoBehaviour:
   radius: 20
   priority: 1
   optionalCharacter: {fileID: 554799848}
-  noTalkNotifier: 0
+  noTalkNotifier: 1
 --- !u!1 &723403060
 GameObject:
   m_ObjectHideFlags: 0
@@ -1352,7 +1352,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4115434783252314967, guid: ae8006234f331a94284bf6284c776fac, type: 3}
   m_PrefabInstance: {fileID: 1279758146}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1733504357}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0d02d1f523dad874fabbe460c88ffea5, type: 3}
@@ -19968,21 +19968,3 @@ TilemapCollider2D:
   m_Offset: {x: 0, y: 0}
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0.00001
---- !u!1 &1733504357 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4115434783252314970, guid: ae8006234f331a94284bf6284c776fac, type: 3}
-  m_PrefabInstance: {fileID: 1279758146}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1733504362
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1733504357}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 354b75215422dd04797f191b3b7ad10a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 
