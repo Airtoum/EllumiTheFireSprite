@@ -6,7 +6,9 @@ public class Wind : Substance
 {
     [SerializeField] float totalForceMultiplier;
     [SerializeField] GameObject areaOfEffect;
-    
+
+    [SerializeField] float WindZoneWidth;
+
     [SerializeField] GameObject backPoint;
     [SerializeField] GameObject frontPoint;
     
@@ -44,6 +46,11 @@ public class Wind : Substance
         ForceMagnitude = forceAdded.magnitude;
 
         Debug.DrawRay(areaOfEffect.GetComponent<Renderer>().bounds.center, forceAdded);
+        
+        
+        Vector2 windZoneSize = new Vector2(frontPoint.transform.localPosition.x - backPoint.transform.localPosition.x, WindZoneWidth);
+        this.GetComponent<BoxCollider2D>().size = windZoneSize;
+        this.GetComponentInChildren<SpriteRenderer>().transform.localScale = new Vector3(windZoneSize.x, windZoneSize.y,this.GetComponentInChildren<SpriteRenderer>().transform.localScale.z);
     }
 
     private void OnTriggerStay2D(Collider2D other) 

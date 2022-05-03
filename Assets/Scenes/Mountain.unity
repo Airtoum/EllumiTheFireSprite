@@ -292,6 +292,7 @@ MonoBehaviour:
   radius: 20
   priority: 1
   optionalCharacter: {fileID: 554799848}
+  noTalkNotifier: 0
 --- !u!1 &723403060
 GameObject:
   m_ObjectHideFlags: 0
