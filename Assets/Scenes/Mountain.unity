@@ -265,14 +265,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Physics Stone
       objectReference: {fileID: 0}
-    - target: {fileID: 5555614892481040495, guid: 105e77e5714c9d646b3bde1a4c95e125, type: 3}
-      propertyPath: m_Mass
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5555614892481040495, guid: 105e77e5714c9d646b3bde1a4c95e125, type: 3}
-      propertyPath: m_Material
-      value: 
-      objectReference: {fileID: 6200000, guid: 06d2103c666efc04584ae2846c817021, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 105e77e5714c9d646b3bde1a4c95e125, type: 3}
 --- !u!1 &500533696

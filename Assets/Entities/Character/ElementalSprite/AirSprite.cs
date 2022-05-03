@@ -357,12 +357,15 @@ public class AirSprite : MainCharacter
         } else {
             secondPoint = args.pos;
             
-            GameObject wind = Instantiate(windSpawn, Vector3.Lerp(firstPoint, secondPoint, 0.5f), quaternion.identity);
+            GameObject wind = Instantiate(windSpawn, firstPoint, quaternion.identity);
+            wind.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.right, secondPoint- firstPoint)));
             Wind wind_substance = wind.GetComponent<Wind>();
-            Transform back_point = wind.transform.GetChild(2); // gross but it works
-            Transform front_point = wind.transform.GetChild(3);
-            back_point.position = firstPoint;
-            front_point.position = secondPoint;
+            //Transform back_point = wind.transform.GetChild(1); // gross but it works
+            Transform front_point = wind.transform.GetChild(2);
+            //back_point.position = firstPoint;
+            Vector3 front_local_pos = front_point.localPosition;
+            front_local_pos.x = (secondPoint-firstPoint).magnitude;
+            front_point.localPosition = front_local_pos;
 
             startNewWind = true;
             if (controlMode == controlModes.TopHalf) {
