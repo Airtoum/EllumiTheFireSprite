@@ -24,6 +24,7 @@ public class MouseSingleton : MonoBehaviour
         MouseSingleton.instance = this;
         GameEvents.UnpairPlayerControls += OnUnpairPlayerControls;
         GameEvents.SelectPositionPlayerControls += OnSelectPositionPlayerControls;
+        GameEvents.PlayerRegainFullControl += OnPlayerRegainFullControl;
 
         GameEvents.StartDialogue += OnStartDialogue;
         GameEvents.EndDialogue += OnEndDialogue;
@@ -92,6 +93,11 @@ public class MouseSingleton : MonoBehaviour
         } else {
             Debug.LogWarning(args.obj.name + " is not a MainCharacter, but is being asked to redistribute the controls.");
         }
+    }
+    
+    void OnPlayerRegainFullControl(object sender, EventArgs args)
+    {
+        CurrentMouseMode = MouseModes.Ability;
     }
 
     void OnStartDialogue(object sender, DialogueArgs args)

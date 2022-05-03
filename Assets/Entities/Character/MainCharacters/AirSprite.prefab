@@ -120,12 +120,18 @@ MonoBehaviour:
   AIJumpPenalization: 0.4
   AIGridFineness: 0.4
   AIDepthPenalty: 0.2
+  AIPathFollowNodeDistance: 0.4
+  AIPhysicsSteps: 25
   facingLeft: 0
   controlMode: 1
   readyToMove: 0
   isInCutscene: 0
+  isFollowing: 1
+  helperFollow: {fileID: 0}
+  followOffset: {x: -2, y: 2}
+  tooFarAwayDistance: 14
   AIReachedWallDistance: 1.2
-  windSpawn: {fileID: 2348945602394527889, guid: 6ec74dc059d19694ea16b64be6e29c94, type: 3}
+  windSpawn: {fileID: 4497938098249218671, guid: b82efc6d415939545a52ed8f5de2b413, type: 3}
   firstPoint: {x: 0, y: 0, z: 0}
   secondPoint: {x: 0, y: 0, z: 0}
   startNewWind: 1
