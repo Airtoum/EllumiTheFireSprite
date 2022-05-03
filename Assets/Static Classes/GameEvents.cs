@@ -50,6 +50,8 @@ public class GameEvents
     public static EventHandler<TalkableArgs> BroadcastTalkable;
     public static EventHandler<TalkableArgs> ATalkableHasBeenChosen;
 
+    public static EventHandler KillWindZones;
+
     public static void InvokePrimaryAbilityDown(Vector3 position)
     {
         if (OnPrimaryAbilityDown == null) return;
@@ -118,5 +120,11 @@ public class GameEvents
     {
         if (ATalkableHasBeenChosen == null) return;
         ATalkableHasBeenChosen(null, new TalkableArgs {pos = Vector2.zero, person = talkable});
+    }
+    
+    public static void InvokeKillWindZones()
+    {
+        if (KillWindZones == null) return;
+        KillWindZones(null, EventArgs.Empty);
     }
 }

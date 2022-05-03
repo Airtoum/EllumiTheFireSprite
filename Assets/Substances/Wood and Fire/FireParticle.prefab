@@ -99,7 +99,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 
-  player: {fileID: 4115434783252314970, guid: ae8006234f331a94284bf6284c776fac, type: 3}
 --- !u!50 &366425063220301986
 Rigidbody2D:
   serializedVersion: 4
@@ -150,4 +149,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   usesFauxVelocity: 0
-  lifeTimer: 2.5
+  lifeTimer: 1.5

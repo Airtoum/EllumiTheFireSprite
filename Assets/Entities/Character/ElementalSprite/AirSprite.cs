@@ -357,6 +357,8 @@ public class AirSprite : MainCharacter
         } else {
             secondPoint = args.pos;
             
+            GameEvents.InvokeKillWindZones();
+            
             GameObject wind = Instantiate(windSpawn, firstPoint, quaternion.identity);
             wind.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.right, secondPoint- firstPoint)));
             Wind wind_substance = wind.GetComponent<Wind>();

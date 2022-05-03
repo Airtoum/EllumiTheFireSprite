@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class DemoEnder : MonoBehaviour
 {
+
+    [SerializeField] private string scene_name;
+    
     void Start()
     {
         
@@ -17,6 +20,6 @@ public class DemoEnder : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D other) 
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene("Thank You Screen");
+        UnityEngine.SceneManagement.SceneManager.LoadScene(scene_name);
     }
 }

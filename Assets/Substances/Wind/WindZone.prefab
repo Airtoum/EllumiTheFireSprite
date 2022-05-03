@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4497938098249218666}
   - component: {fileID: 4497938098249218667}
   - component: {fileID: 4497938098249218664}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: WindZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -32,6 +32,7 @@ Transform:
   - {fileID: 4497938099348919808}
   - {fileID: 4497938099246821936}
   - {fileID: 4497938099862139485}
+  - {fileID: 3184659165150712757}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -74,12 +75,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 
-  totalForceMultiplier: 18
+  totalForceMultiplier: 28
   areaOfEffect: {fileID: 4497938099348919815}
   WindZoneWidth: 3
   backPoint: {fileID: 4497938099246821943}
   frontPoint: {fileID: 4497938099862139484}
   ForceMagnitude: 0
+  lifetime: 11
+  natural: 0
 --- !u!1 &4497938099246821943
 GameObject:
   m_ObjectHideFlags: 0
@@ -89,7 +92,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4497938099246821936}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BackPoint
   m_TagString: Untagged
   m_Icon: {fileID: 2488908585195742037, guid: 0000000000000000d000000000000000, type: 0}
@@ -120,7 +123,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4497938099348919808}
   - component: {fileID: 4497938099348919810}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: WindBoundingBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -137,8 +140,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 3184659165150712757}
+  m_Children: []
   m_Father: {fileID: 4497938098249218666}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -149,7 +151,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4497938099348919815}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -202,7 +204,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4497938099862139485}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: FrontPoint
   m_TagString: Untagged
   m_Icon: {fileID: 1206586993520771344, guid: 0000000000000000d000000000000000, type: 0}
@@ -228,27 +230,31 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 4497938099348919808}
+    m_TransformParent: {fileID: 4497938098249218666}
     m_Modifications:
     - target: {fileID: 1229867042748925083, guid: 83b65a16e0832c242a40e1ed3b6018e9, type: 3}
       propertyPath: m_Name
       value: AnimatedWind
       objectReference: {fileID: 0}
+    - target: {fileID: 1229867042748925083, guid: 83b65a16e0832c242a40e1ed3b6018e9, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 5947951375883212733, guid: 83b65a16e0832c242a40e1ed3b6018e9, type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5947951375883212733, guid: 83b65a16e0832c242a40e1ed3b6018e9, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.05
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5947951375883212733, guid: 83b65a16e0832c242a40e1ed3b6018e9, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.050000004
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5947951375883212733, guid: 83b65a16e0832c242a40e1ed3b6018e9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5947951375883212733, guid: 83b65a16e0832c242a40e1ed3b6018e9, type: 3}
       propertyPath: m_LocalPosition.y
@@ -288,11 +294,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6896778554167011004, guid: 83b65a16e0832c242a40e1ed3b6018e9, type: 3}
       propertyPath: m_Size.x
-      value: 17.7
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6896778554167011004, guid: 83b65a16e0832c242a40e1ed3b6018e9, type: 3}
       propertyPath: m_Size.y
-      value: 17.4
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 83b65a16e0832c242a40e1ed3b6018e9, type: 3}

@@ -20,7 +20,7 @@ MonoBehaviour:
     options:
     - text: Move
       action: Move
-    - text: Abiltiy
+    - text: Ability
       action: Ability
     - text: Talk
       action: None

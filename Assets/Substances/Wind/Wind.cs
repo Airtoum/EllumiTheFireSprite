@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,9 +17,23 @@ public class Wind : Substance
     
     [SerializeField] float ForceMagnitude;
 
+    private BoxCollider2D box_collider;
+
+    [SerializeField] public float lifetime;
+    private float age = 0;
+
+    [SerializeField] public bool natural = false; 
+
+
+    private void Awake()
+    {
+        GameEvents.KillWindZones += OnKillWindZones;
+    }
+
     void Start()
     {
         this.type = "Wind";
+        box_collider = this.GetComponent<BoxCollider2D>();
         
         CalculateForceDirection();
     }
@@ -26,6 +41,15 @@ public class Wind : Substance
     void Update()
     {
         CalculateForceDirection();
+        age += Time.deltaTime;
+        if (age > lifetime) {
+            Destroy(gameObject);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        GameEvents.KillWindZones -= OnKillWindZones;
     }
 
 
@@ -49,9 +73,14 @@ public class Wind : Substance
         
         
         Vector2 windZoneSize = new Vector2(frontPoint.transform.localPosition.x - backPoint.transform.localPosition.x, WindZoneWidth);
-        this.GetComponent<BoxCollider2D>().size = windZoneSize;
+        box_collider.size = windZoneSize;
+        box_collider.offset = new Vector2(windZoneSize.x / 2, box_collider.offset.y);
         GameObject animatedWindZone = this.GetComponentInChildren<Animator>().gameObject;
         animatedWindZone.GetComponent<SpriteRenderer>().size = windZoneSize;
+        areaOfEffect.transform.localPosition = new Vector3(windZoneSize.x/2, 0, 0);
+        areaOfEffect.transform.localScale = windZoneSize;
+        animatedWindZone.transform.localPosition = new Vector3(windZoneSize.x/2, 0, 0);
+        //animatedWindZone.transform.localScale = windZoneSize;
     }
 
     private void OnTriggerStay2D(Collider2D other) 
@@ -67,6 +96,13 @@ public class Wind : Substance
         if (triggerSubstance.gameObject.GetComponent<Rigidbody2D>() != null)
         {
             triggerSubstance.gameObject.GetComponent<Rigidbody2D>().AddForce(forceAdded);
+        }
+    }
+
+    public void OnKillWindZones(object sender, EventArgs args)
+    {
+        if (!natural) {
+            Destroy(gameObject);
         }
     }
 }

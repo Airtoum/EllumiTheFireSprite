@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Thank You Screen.unity
     guid: da01a9bbfd98d0848b4a036c66d3cac1
+  - enabled: 1
+    path: Assets/Scenes/Mountain.unity
+    guid: e0fe21ae5be2b224996f4f26889e97cb
   m_configObjects: {}

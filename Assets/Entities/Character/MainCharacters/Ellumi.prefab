@@ -758,7 +758,7 @@ MonoBehaviour:
   tooFarAwayDistance: 14
   flameSpawn: {fileID: 3999331025085245803, guid: 8e1775f74b8e114439c2cf865f5147de, type: 3}
   flameSpawnFrom: {fileID: 4115434783252314968}
-  flameSpeed: 4
+  flameSpeed: 7
   flameInterval: 0.08
   flameTimer: 0
   wallPushDistance: 3
