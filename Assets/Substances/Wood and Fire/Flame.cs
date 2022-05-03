@@ -19,7 +19,6 @@ public class Flame : Substance
                 SubstanceInteract(triggerSubstance);
             }
         }
-        Destroy(this.gameObject, 0.05f);
     }
 
     public override void SubstanceInteract(Substance triggerSubstance)

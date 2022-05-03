@@ -356,12 +356,14 @@ public class AirSprite : MainCharacter
             startNewWind = false;
         } else {
             secondPoint = args.pos;
-            // delete this and replace with correct things later!
-            Instantiate(windSpawn, firstPoint, quaternion.identity);
-            Instantiate(windSpawn, 0.75f * firstPoint + 0.25f * secondPoint, quaternion.identity);
-            Instantiate(windSpawn, 0.5f * firstPoint + 0.5f * secondPoint, quaternion.identity);
-            Instantiate(windSpawn, 0.25f * firstPoint + 0.75f * secondPoint, quaternion.identity);
-            Instantiate(windSpawn, secondPoint, quaternion.identity);
+            
+            GameObject wind = Instantiate(windSpawn, Vector3.Lerp(firstPoint, secondPoint, 0.5f), quaternion.identity);
+            Wind wind_substance = wind.GetComponent<Wind>();
+            Transform back_point = wind.transform.GetChild(2); // gross but it works
+            Transform front_point = wind.transform.GetChild(3);
+            back_point.position = firstPoint;
+            front_point.position = secondPoint;
+
             startNewWind = true;
             if (controlMode == controlModes.TopHalf) {
                 GameEvents.InvokePlayerRegainFullControl();
@@ -374,6 +376,7 @@ public class AirSprite : MainCharacter
         if (readyToMove && (controlMode == controlModes.BottomHalf || controlMode == controlModes.NPC)) {
             isFollowing = false;
             MoveToPoint(args.pos);
+            readyToMove = false;
             GameEvents.InvokePlayerRegainFullControl();
         }
     }
