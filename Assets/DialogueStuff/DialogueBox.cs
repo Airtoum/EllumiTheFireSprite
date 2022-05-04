@@ -39,6 +39,11 @@ public class DialogueBox : MonoBehaviour
         GameEvents.StartDialogue += StartDialogue;
     }
 
+    void OnDestroy()
+    {
+        GameEvents.StartDialogue -= StartDialogue;
+    }
+
     void Start()
     {
         Hide();

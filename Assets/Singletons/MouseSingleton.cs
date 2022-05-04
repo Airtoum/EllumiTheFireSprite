@@ -30,6 +30,16 @@ public class MouseSingleton : MonoBehaviour
         GameEvents.EndDialogue += OnEndDialogue;
     }
 
+    void OnDestroy()
+    {
+        GameEvents.UnpairPlayerControls -= OnUnpairPlayerControls;
+        GameEvents.SelectPositionPlayerControls -= OnSelectPositionPlayerControls;
+        GameEvents.PlayerRegainFullControl -= OnPlayerRegainFullControl;
+
+        GameEvents.StartDialogue -= OnStartDialogue;
+        GameEvents.EndDialogue -= OnEndDialogue;
+    }
+
     // Update is called once per frame
     void Update()
     {

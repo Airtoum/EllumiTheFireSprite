@@ -26,6 +26,14 @@ public class Talkable : MonoBehaviour
         GameEvents.ATalkableHasBeenChosen += OnATalkableHasBeenChosen;
         conversationIndex = Mathf.Clamp(conversationIndex, 0, Conversations.Count - 1);
     }
+    
+    void OnDestroy()
+    {
+        GameEvents.StartDialogue -= OnStartDialogue;
+        GameEvents.EndDialogue -= OnEndDialogue;
+        GameEvents.ScanForTalkable -= OnScanForTalkable;
+        GameEvents.ATalkableHasBeenChosen -= OnATalkableHasBeenChosen;
+    }
 
     // Update is called once per frame
     void Update()

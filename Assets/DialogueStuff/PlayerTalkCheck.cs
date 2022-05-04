@@ -13,6 +13,11 @@ public class PlayerTalkCheck : MonoBehaviour
     {
         GameEvents.BroadcastTalkable += OnBroadcastTalkable;
     }
+    
+    void OnDestroy()
+    {
+        GameEvents.BroadcastTalkable -= OnBroadcastTalkable;
+    }
 
     // Update is called once per frame
     void Update()

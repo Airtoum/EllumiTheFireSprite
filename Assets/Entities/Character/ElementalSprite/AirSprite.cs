@@ -24,6 +24,11 @@ public class AirSprite : MainCharacter
         
         base.Awake();
     }
+
+    void OnDestroy()
+    {
+        GameEvents.OnPrimaryAbilityDown -= DoAbilityPrimaryDown;
+    }
     
     protected override void DoMovement()
     {

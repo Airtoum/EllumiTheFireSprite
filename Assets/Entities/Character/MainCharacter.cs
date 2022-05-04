@@ -36,7 +36,20 @@ public class MainCharacter : DynamicCharacter
         GameEvents.StartDialogue += OnStartDialogue;
         GameEvents.EndDialogue += OnEndDialogue;
     }
-    
+
+    private void OnDestroy()
+    {
+        GameEvents.PlayerRegainFullControl -= OnPlayerRegainFullControl;
+        GameEvents.UnpairPlayerControls -= OnUnpairPlayerControls;
+        GameEvents.SelectPositionPlayerControls -= OnSelectPositionPlayerControls;
+
+        GameEvents.OnMoveToDown -= OnMoveToDown;
+        GameEvents.OnMoveToUp -= OnMoveToUp;
+
+        GameEvents.StartDialogue -= OnStartDialogue;
+        GameEvents.EndDialogue -= OnEndDialogue;
+    }
+
     // Start is called before the first frame update
     protected new void Start()
     {

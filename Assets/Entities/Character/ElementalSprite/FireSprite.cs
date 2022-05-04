@@ -28,6 +28,13 @@ public class FireSprite : MainCharacter
         GameEvents.OnMoveToUp += OnMoveToUp;
         base.Awake();
     }
+
+    void OnDestroy()
+    {
+        GameEvents.OnPrimaryAbilityDown -= DoAbilityPrimaryDown;
+        GameEvents.OnPrimaryAbilityHeld -= DoAbilityPrimaryHold;
+        GameEvents.OnMoveToUp -= OnMoveToUp;
+    }
     
     public override void DoAbilityPrimaryDown(object sender, Vector3Args args)
     {
