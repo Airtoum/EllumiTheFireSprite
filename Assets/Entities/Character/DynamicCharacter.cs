@@ -305,6 +305,7 @@ public class DynamicCharacter : Character
                 }
             } else {
                 // keep going
+                best = Mathf.Min(best, Ultramath.DistanceToLineSegment(AIDestination, pos, pos + new Vector2(dx, 0f)));
                 (float, AIMoves) result = ExploreLateral(pos + new Vector2(dx, 0f), is_right, depth + 1, max_depth);
                 DebugSquare(pos, Color.green);
                 CheckIfBetter(result.Item1, AIMoves.Lateral);
@@ -387,7 +388,7 @@ public class DynamicCharacter : Character
         void CheckIfBetter(float score, AIMoves new_move)
         {
             if (score < best) {
-                best = score;
+                best = score + depth * AIDepthPenalty;
                 move = new_move;
             }
         }
@@ -409,6 +410,7 @@ public class DynamicCharacter : Character
             }
         } else {
             // continue jump trajectory
+            best = Mathf.Min(best, Ultramath.DistanceToLineSegment(AIDestination, pos, next_pos));
             (float, AIMoves) result = ExploreJump(next_pos, next_vel, depth + 1, max_depth);
             CheckIfBetter(result.Item1, result.Item2);
             return (best, move);
