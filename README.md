@@ -4,5 +4,5 @@ Ellumi must make friends with the other Sprites in order to solve the mystery of
 This was made for B453 Game Development.
 
 Made by:
-*Aidan Lesh
-*Kenneth Harper
+ * Aidan Lesh
+ * Kenneth Harper
